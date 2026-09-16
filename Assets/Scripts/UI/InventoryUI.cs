@@ -42,6 +42,7 @@ public class InventoryUI : MonoBehaviour
         rectTransform = GetComponent<RectTransform>();
         bubbleCount = GetComponentInChildren<TextMeshProUGUI>();
         inputActions = new PlayerInputActions();
+        isAnimated = false;
     }
     void Start()
     {
@@ -56,7 +57,6 @@ public class InventoryUI : MonoBehaviour
         hiddenPosition = new Vector2(0f, -1500f);
         shownPosition = new Vector2(0f, 0f);
         isOpen = false;
-        isAnimated = false;
         bubbleRectTransform.anchoredPosition = new Vector2(-550f,350f);
         rectTransform.anchoredPosition = hiddenPosition;
         bubbleCount.text = playerStats.bubbles.ToString();
@@ -65,8 +65,8 @@ public class InventoryUI : MonoBehaviour
     {
         if (inventoryInput != 0 && !isAnimated)
         {
-            bubbleCount.text = playerStats.bubbles.ToString();
             isAnimated = true;
+            bubbleCount.text = playerStats.bubbles.ToString();
             playerController.isInventoryOpen = isOpen;
             isOpen = !isOpen;
             if (currentAnimation != null) StopCoroutine(currentAnimation);

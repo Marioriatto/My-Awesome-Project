@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     private float pickInput;
     private bool isMoving;
     private bool isInteracting;
+    private bool isDealing;
     private PlayerInputActions inputActions;
     private PlayerStats stats;
     private Vector2 moveInput;
