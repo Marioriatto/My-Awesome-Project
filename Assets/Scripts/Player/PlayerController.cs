@@ -109,8 +109,15 @@ public class PlayerController : MonoBehaviour
             if (pickInput != 0)
             {
                 Bubbles bubbles = other.gameObject.GetComponent<Bubbles>();
-                stats.bubbles += bubbles.amount;
-                bubbles.Consume();
+                bubbles.Pick();
+            }
+        }
+        if (other.CompareTag("Items"))
+        {
+            if (pickInput != 0)
+            {
+                Item item = other.gameObject.GetComponent<Item>();
+                item.Pick();
             }
         }
     }

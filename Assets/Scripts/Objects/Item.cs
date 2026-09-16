@@ -9,11 +9,11 @@ public class Item : MonoBehaviour
     }
     public virtual void Pick()
     {
-        Debug.Log("Picked up: " + itemName);
+    
     }
     public virtual void OnConsume()
     {
-        Debug.Log("Destroying: " + itemName);
+    
     }
     public void Consume()
     {

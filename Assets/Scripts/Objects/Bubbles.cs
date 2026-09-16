@@ -9,10 +9,12 @@ public class Bubbles : Item
     public override void Pick()
     {
         base.Pick();
+        Consume();
     }
     public override void OnConsume()
     {
         base.OnConsume();
+        PlayerStats.Instance.bubbles += (amount > 0 ) ? amount : (amount * -1);
     }
     public int amount
     {

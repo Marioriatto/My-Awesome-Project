@@ -60,7 +60,6 @@ public class InventoryUI : MonoBehaviour
         bubbleRectTransform.anchoredPosition = new Vector2(-550f,350f);
         rectTransform.anchoredPosition = hiddenPosition;
         bubbleCount.text = playerStats.bubbles.ToString();
-
     }
     void Update()
     {
