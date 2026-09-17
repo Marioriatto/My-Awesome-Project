@@ -3,9 +3,17 @@ using System.Collections;
 
 public class Spawner : MonoBehaviour
 {
+    [SerializeField] GameObject slotPrefab;
+    [SerializeField] Transform gridParent;
+    [SerializeField] InventoryUI inventoryUIScript;
+    [SerializeField] Vector2 startPosition = new Vector2(-650f, 50f);
+    [SerializeField] Vector2 spacing = new Vector2(330f, 300f);
+    private int columns = 5;
+
     [SerializeField] GameObject[] fruits;
     [SerializeField] GameObject bubbles;
     [SerializeField] GameObject NPC;
+    [SerializeField] GameObject Dealer;
     [SerializeField] GameObject Ground;
     private BitArray map;
     void SetCell(int x, int z, bool value) => map[(z * 150) + x] = value;
@@ -24,6 +32,24 @@ public class Spawner : MonoBehaviour
     bool CheckMatrix(int x, int z)
     {
         return GetCell(x + 75, z + 75);
+    }
+    void SpawnSlots()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            GameObject slot = Instantiate(slotPrefab, gridParent);
+            Slot slotScript = slot.GetComponent<Slot>();
+            slotScript.id = i;
+            inventoryUIScript.slots[i] = slotScript;
+            int row = i / columns;
+            int col = i % columns;
+
+            RectTransform rectTransform = slot.GetComponent<RectTransform>();
+            rectTransform.anchoredPosition = new Vector2(
+                startPosition.x + col * spacing.x,
+                startPosition.y - row * spacing.y
+            );
+        }
     }
     void SpawnItems()
     {
@@ -47,9 +73,21 @@ public class Spawner : MonoBehaviour
     }
     void SpawnNPCs()
     {
-        for (int i = 0; i < 9; i++)
+        for (int i = 0; i < 4; i++)
         {
-            Instantiate(NPC);
+            GameObject npc = Instantiate(NPC);
+            int desicion = Random.Range(0,2), x = Random.Range(-25,25), z = Random.Range(-25,25);
+            if (desicion == 0) npc = Instantiate(NPC);
+            else {npc = Instantiate(Dealer);}
+            int deltax = 1;
+            while (CheckMatrix(x,z))
+            {
+                if (CheckMatrix(x + deltax, z)) x += deltax;
+                else if (CheckMatrix(x - deltax, z)) x -= deltax;
+                else deltax += 1;
+                if (deltax == 149) break;
+            }
+            npc.transform.position = new Vector3(x, 1f, z);
         }
     }
     void SpawnHouses()
@@ -64,8 +102,9 @@ public class Spawner : MonoBehaviour
     }
     void Start()
     {
+        SpawnSlots();
         SpawnItems();
-        //SpawnNPCs();
+        SpawnNPCs();
         //SpawnHouses();
     }
     void Update()

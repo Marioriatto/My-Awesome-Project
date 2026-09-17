@@ -7,11 +7,11 @@ public class Item : MonoBehaviour
     {
         get { return _itemName; }
     }
-    protected virtual void Pick()
+    public virtual void Pick()
     {
     
     }
-    protected virtual void OnConsume()
+    public virtual void OnConsume()
     {
     
     }

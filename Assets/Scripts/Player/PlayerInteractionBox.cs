@@ -12,11 +12,29 @@ public class PlayerInteractionBox : MonoBehaviour
     {
         if (other.CompareTag("NPC"))
         {
-            parentScript.NpcTrigger();
+            if (parentScript.buttonInput != 0) 
+            {
+                parentScript.isInteracting = true;
+                Debug.Log("npc TODO");
+                parentScript.isInteracting = false;
+            }
         }
         else if (other.CompareTag("House"))
         {
-            parentScript.HouseTrigger();
+            if (parentScript.buttonInput != 0)
+            {
+                parentScript.isInteracting = true;
+                Debug.Log("casa TODO");
+                parentScript.isInteracting = false;
+            }
+        }
+        else if (other.CompareTag("Dealer"))
+        {
+            if (parentScript.pickInput != 0)
+            {
+                NPC dealer = other.gameObject.GetComponent<NPC>();
+                dealer.Dialogue();
+            }
         }
     }
     void Update()

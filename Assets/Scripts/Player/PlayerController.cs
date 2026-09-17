@@ -6,10 +6,10 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float speed = 5f;
     public float currentSpeed;
-    private float buttonInput;
-    private float pickInput;
+    public float pickInput;
+    public float buttonInput;
     private bool isMoving;
-    private bool isInteracting;
+    public bool isInteracting;
     private bool isDealing;
     private PlayerInputActions inputActions;
     private PlayerStats stats;
@@ -28,10 +28,10 @@ public class PlayerController : MonoBehaviour
         inputActions.Player.Move.canceled += OnMoveCanceled;
         inputActions.Player.Rotate.performed += OnRotatePerformed;
         inputActions.Player.Rotate.canceled += OnRotateCanceled;
-        inputActions.Player.Action.performed += OnActionPerformed;
-        inputActions.Player.Action.canceled += OnActionCanceled;
         inputActions.Player.Pick.performed += OnPickPerformed;
         inputActions.Player.Pick.canceled += OnPickCanceled;
+        inputActions.Player.Action.performed += OnActionPerformed;
+        inputActions.Player.Action.canceled += OnActionCanceled;
     }
     private void OnDisable()
     {
@@ -39,13 +39,12 @@ public class PlayerController : MonoBehaviour
         inputActions.Player.Move.canceled -= OnMoveCanceled;
         inputActions.Player.Rotate.performed -= OnRotatePerformed;
         inputActions.Player.Rotate.canceled -= OnRotateCanceled;
-        inputActions.Player.Action.performed -= OnActionPerformed;
-        inputActions.Player.Action.canceled -= OnActionCanceled;
         inputActions.Player.Pick.performed -= OnPickPerformed;
         inputActions.Player.Pick.canceled -= OnPickCanceled;
+        inputActions.Player.Action.performed -= OnActionPerformed;
+        inputActions.Player.Action.canceled -= OnActionCanceled;
         inputActions.Player.Disable();
     }
-    // InputActions Code
     private void OnActionPerformed(InputAction.CallbackContext context)
     {
         buttonInput = context.ReadValue<float>();
@@ -64,9 +63,9 @@ public class PlayerController : MonoBehaviour
     }
     private void OnMovePerformed(InputAction.CallbackContext context)
     {
-        isMoving = true;
         if (!isInteracting)
         {
+            isMoving = true;
             moveInput = context.ReadValue<Vector2>();
             currentSpeed = Mathf.Sqrt(((moveInput.x * moveInput.x) + (moveInput.y * moveInput.y)) * speed);
         }
@@ -84,24 +83,6 @@ public class PlayerController : MonoBehaviour
     private void OnRotateCanceled(InputAction.CallbackContext context)
     {
         rotateInput = Vector2.zero;
-    }
-    public void NpcTrigger()
-    {
-        if (buttonInput != 0) 
-        {
-            isInteracting = true;
-            Debug.Log("npc");
-            isInteracting = false;
-        }
-    }
-    public void HouseTrigger()
-    {
-        if (buttonInput != 0)
-        {
-            isInteracting = true;
-            Debug.Log("casa");
-            isInteracting = false;
-        }
     }
     private void OnTriggerStay(Collider other)
     {
