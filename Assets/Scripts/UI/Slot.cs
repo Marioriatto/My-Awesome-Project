@@ -45,9 +45,10 @@ public class Slot : MonoBehaviour
     {
         if (itemPrefab == null) Debug.Log("no prefab");
         if (playerController == null) Debug.Log("No player");
-        GameObject droppedItem = Instantiate(itemPrefab, playerController.transform);
+        GameObject droppedItem = Instantiate(itemPrefab);
         Vector3 playerPos = playerController.transform.position;
         droppedItem.transform.position = new Vector3(playerPos.x, 0.25f, playerPos.z);
+        Destroy(icon);
         icon = null;
         iconNormalSize = new Vector2(0f,0f);
         iconRectTransform = null;
