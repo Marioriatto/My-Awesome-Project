@@ -43,11 +43,11 @@ public class Slot : MonoBehaviour
     }
     public void SlotAction()
     {
-        if (itemPrefab == null) Debug.Log("no prefab");
-        if (playerController == null) Debug.Log("No player");
+        if (itemPrefab == null) {Debug.Log("no item"); return;}
+        if (playerController == null) {Debug.Log("No player"); return;}
         GameObject droppedItem = Instantiate(itemPrefab);
         Vector3 playerPos = playerController.transform.position;
-        droppedItem.transform.position = new Vector3(playerPos.x, 0.25f, playerPos.z);
+        droppedItem.transform.position = new Vector3(playerPos.x, 0f, playerPos.z);
         Destroy(icon);
         icon = null;
         iconNormalSize = new Vector2(0f,0f);

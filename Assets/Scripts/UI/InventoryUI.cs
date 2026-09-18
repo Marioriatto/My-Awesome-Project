@@ -94,10 +94,6 @@ public class InventoryUI : MonoBehaviour
         {
             Debug.Log("InventoryUI reference for playerController is null");
         }
-        else
-        {
-            playerController.isInventoryOpen = false;
-        }
         bubbleRectTransform.anchoredPosition = new Vector2(570f,350f);
         bubbleCount.text = playerStats.bubbles.ToString();
     }
@@ -142,6 +138,7 @@ public class InventoryUI : MonoBehaviour
     }
     private int FindAvailableSlot()
     {
+        if (slots[(5*selectingRow) + selectingCol].icon == null) return (5*selectingRow) + selectingCol; 
         for (int i = 0; i < slots.Length; i++)
         {
             if (slots[i].icon == null) return i;
@@ -184,12 +181,17 @@ public class InventoryUI : MonoBehaviour
     //opened by Dealers or by Player when dealing
     public void OpenInventory()
     {
+        if (selectedSlot == null)
+        {
+            selectedSlot = slots[0];
+            selectedSlot.Hover();
+        }
         isAnimated = true;
         isSelecting = !isSelecting;
         bubbleCount.text = playerStats.bubbles.ToString();
         Vector2 target = isOpen ? hiddenPosition : shownPosition;
         isOpen = !isOpen;
-        playerController.isInventoryOpen = isOpen;
+        playerController.isInteracting = isOpen;
         if (currentAnimation != null) StopCoroutine(currentAnimation);
         currentAnimation = StartCoroutine(AnimatePanel(target));
     }

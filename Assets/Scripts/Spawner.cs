@@ -71,7 +71,7 @@ public class Spawner : MonoBehaviour
                 else deltax += 1;
                 if (deltax == 149) break;
             }
-            instance.transform.position = new Vector3(x, 0.25f, z);
+            instance.transform.position = new Vector3(x, 0f, z);
         }
     }
     void SpawnNPCs()

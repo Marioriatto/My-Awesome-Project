@@ -16,8 +16,6 @@ public class PlayerController : MonoBehaviour
     private PlayerStats stats;
     private Vector2 moveInput;
     private Vector2 rotateInput;
-    private bool _isInventoryOpen;
-    public bool isInventoryOpen { get { return _isInventoryOpen; } set { _isInventoryOpen = value; }}
     private void Awake()
     {
         inputActions = new PlayerInputActions();
@@ -89,7 +87,7 @@ public class PlayerController : MonoBehaviour
     {
         if (other.CompareTag("Bubbles"))
         {
-            if (pickInput != 0)
+            if (pickInput != 0 && !isInteracting)
             {
                 Bubbles bubbles = other.gameObject.GetComponent<Bubbles>();
                 bubbles.Pick();
@@ -97,7 +95,7 @@ public class PlayerController : MonoBehaviour
         }
         if (other.CompareTag("Items"))
         {
-            if (pickInput != 0)
+            if (pickInput != 0 && !isInteracting)
             {
                 Item item = other.gameObject.GetComponent<Item>();
                 Debug.Log(item);
@@ -114,7 +112,7 @@ public class PlayerController : MonoBehaviour
     }
     void Update()
     {
-        if (!isInteracting && !isInventoryOpen)
+        if (!isInteracting)
         {
             transform.position += new Vector3(moveInput.x * speed * Time.deltaTime, 0.0f, moveInput.y * speed * Time.deltaTime);
 
