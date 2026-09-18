@@ -58,11 +58,8 @@ public class PlayerController : MonoBehaviour
     }
     private void OnMovePerformed(InputAction.CallbackContext context)
     {
-        if (!isInteracting)
-        {
-            isMoving = true;
-            moveInput = context.ReadValue<Vector2>();
-        }
+        isMoving = true;
+        moveInput = context.ReadValue<Vector2>();
     }
     private void OnMoveCanceled(InputAction.CallbackContext context)
     {
@@ -71,7 +68,7 @@ public class PlayerController : MonoBehaviour
     }
     private void OnRotatePerformed(InputAction.CallbackContext context)
     {
-        if (!isInteracting) rotateInput = context.ReadValue<Vector2>();
+        rotateInput = context.ReadValue<Vector2>();
     }
     private void OnRotateCanceled(InputAction.CallbackContext context)
     {

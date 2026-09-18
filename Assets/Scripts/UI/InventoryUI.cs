@@ -48,7 +48,7 @@ public class InventoryUI : MonoBehaviour
     }
     private void OnInventoryActionPerformed(InputAction.CallbackContext context)
     {
-        inventorySelectInput = context.ReadValue<float>();
+        if (isOpen) inventorySelectInput = context.ReadValue<float>();
     }
     private void OnInventoryActionCanceled(InputAction.CallbackContext context)
     {
@@ -56,7 +56,7 @@ public class InventoryUI : MonoBehaviour
     }
     private void OnMoveInventoryPerformed(InputAction.CallbackContext context)
     {
-        moveInventoryInput = context.ReadValue<Vector2>();
+        if (isOpen) moveInventoryInput = context.ReadValue<Vector2>();
     }
     private void OnMoveInventoryCanceled(InputAction.CallbackContext context)
     {
