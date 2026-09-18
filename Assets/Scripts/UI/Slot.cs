@@ -40,6 +40,7 @@ public class Slot : MonoBehaviour
         icon = Instantiate(data.icon, transform);
         iconRectTransform = icon.GetComponent<RectTransform>();
         iconNormalSize = iconRectTransform.sizeDelta;
+        Hover();
     }
     public void SlotAction()
     {
