@@ -4,16 +4,12 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private float speed = 5f;
-    public float currentSpeed;
     public float pickInput;
     public float buttonInput;
     private bool isMoving;
     public bool isInteracting;
-    private bool isDealing;
     [SerializeField] InventoryUI inventoryScript;
     private PlayerInputActions inputActions;
-    private PlayerStats stats;
     private Vector2 moveInput;
     private Vector2 rotateInput;
     private void Awake()
@@ -66,14 +62,12 @@ public class PlayerController : MonoBehaviour
         {
             isMoving = true;
             moveInput = context.ReadValue<Vector2>();
-            currentSpeed = Mathf.Sqrt(((moveInput.x * moveInput.x) + (moveInput.y * moveInput.y)) * speed);
         }
     }
     private void OnMoveCanceled(InputAction.CallbackContext context)
     {
         isMoving = false;
         moveInput = Vector2.zero;
-        currentSpeed = 0f;
     }
     private void OnRotatePerformed(InputAction.CallbackContext context)
     {
@@ -98,23 +92,20 @@ public class PlayerController : MonoBehaviour
             if (pickInput != 0 && !isInteracting)
             {
                 Item item = other.gameObject.GetComponent<Item>();
-                Debug.Log(item);
                 if (inventoryScript.Add(item)) item.Pick();
             }
         }
     }
     void Start()
     {
-        stats = gameObject.GetComponent<PlayerStats>();
         if (inventoryScript == null) Debug.LogWarning("PlayerController Script does not have a reference to Inventory script");
-        if (stats == null) Debug.LogWarning("PlayerController Script does not have a reference to PlayerStats script");
         if (inputActions == null) Debug.LogWarning("PlayerController Script does not have a reference to InputActions");
     }
     void Update()
     {
         if (!isInteracting)
         {
-            transform.position += new Vector3(moveInput.x * speed * Time.deltaTime, 0.0f, moveInput.y * speed * Time.deltaTime);
+            transform.position += new Vector3(moveInput.x * 5f * Time.deltaTime, 0.0f, moveInput.y * 5f * Time.deltaTime);
 
             if (isMoving)
             {

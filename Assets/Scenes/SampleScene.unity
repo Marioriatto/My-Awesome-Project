@@ -135,6 +135,59 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e816a18511d33b247a0f08e4efff55b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventoryUI
+--- !u!1 &63035416
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 63035418}
+  - component: {fileID: 63035417}
+  m_Layer: 0
+  m_Name: OptionsBubble
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &63035417
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 63035416}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f04351b7a3195d42b42ea06d8b79dce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OptionsBubble
+  rectTransform: {fileID: 0}
+  text: {fileID: 0}
+  options: []
+  inventoryScript: {fileID: 0}
+--- !u!4 &63035418
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 63035416}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -12, y: 0.05673, z: -5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!224 &93126811 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 5099679572847816414, guid: 6331e124c01176744828ddd516dc47d8, type: 3}
+  m_PrefabInstance: {fileID: 337192875061719799}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -837,9 +890,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1251890867}
     - target: {fileID: 7505166005919769969, guid: 6331e124c01176744828ddd516dc47d8, type: 3}
+      propertyPath: optionsBubble
+      value: 
+      objectReference: {fileID: 63035417}
+    - target: {fileID: 7505166005919769969, guid: 6331e124c01176744828ddd516dc47d8, type: 3}
       propertyPath: playerController
       value: 
       objectReference: {fileID: 1251890865}
+    - target: {fileID: 7505166005919769969, guid: 6331e124c01176744828ddd516dc47d8, type: 3}
+      propertyPath: bubbleCountRectTransform
+      value: 
+      objectReference: {fileID: 93126811}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -917,3 +978,4 @@ SceneRoots:
   - {fileID: 916299064}
   - {fileID: 1113831001}
   - {fileID: 951821337}
+  - {fileID: 63035418}

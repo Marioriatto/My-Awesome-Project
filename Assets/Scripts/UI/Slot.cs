@@ -14,11 +14,14 @@ public class Slot : MonoBehaviour
     private float hoverScaling;
     private GameObject _icon;
     public GameObject icon {get{return _icon;} set { _icon = value;}}
-    private GameObject itemPrefab;
+    public GameObject itemPrefab;
+    public ItemData itemData;
     void Awake()
     {
         icon = null;
         iconRectTransform = null;
+        itemData = null;
+        itemPrefab = null;
     }
     void Start()
     {
@@ -35,14 +38,17 @@ public class Slot : MonoBehaviour
             Debug.LogWarning("item is null");
             return;
         }
+        itemData = data;
+        // Prefab setup
         if (data.prefab != null) itemPrefab = data.prefab;
         else Debug.LogWarning("item " + data.itemName + " doesnt have a prefab");
+        // Icon setup
         icon = Instantiate(data.icon, transform);
         iconRectTransform = icon.GetComponent<RectTransform>();
         iconNormalSize = iconRectTransform.sizeDelta;
         Hover();
     }
-    public void SlotAction()
+    public void Drop()
     {
         if (itemPrefab == null) {Debug.Log("no item"); return;}
         if (playerController == null) {Debug.Log("No player"); return;}

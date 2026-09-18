@@ -3,13 +3,13 @@ using UnityEngine.InputSystem;
 using TMPro;
 public class InventoryUI : MonoBehaviour
 {
+    [SerializeField] OptionsBubble optionsBubble;
     public Slot[] slots;
     private Slot selectedSlot;
-    private TextMeshProUGUI bubbleCount;
+    private TextMeshProUGUI bubbleCountText;
     private PlayerInputActions inputActions;
     [SerializeField] PlayerController playerController;
-    [SerializeField] PlayerStats playerStats;
-    [SerializeField] RectTransform bubbleRectTransform;
+    [SerializeField] RectTransform bubbleCountRectTransform;
     private RectTransform rectTransform;
     private Vector2 shownPosition;
     private Vector2 hiddenPosition;
@@ -19,8 +19,8 @@ public class InventoryUI : MonoBehaviour
 
     private bool isOpen;
     private bool isAnimated;
-    private bool isSelecting;
     private bool isCooling;
+    private bool isSelecting;
     public int selectingRow;
     public int selectingCol;
     private Coroutine currentAnimation;
@@ -56,10 +56,7 @@ public class InventoryUI : MonoBehaviour
     }
     private void OnMoveInventoryPerformed(InputAction.CallbackContext context)
     {
-        if (isSelecting)
-        {
-            moveInventoryInput = context.ReadValue<Vector2>();
-        }
+        moveInventoryInput = context.ReadValue<Vector2>();
     }
     private void OnMoveInventoryCanceled(InputAction.CallbackContext context)
     {
@@ -77,10 +74,11 @@ public class InventoryUI : MonoBehaviour
     {
         slots = new Slot[10];
         rectTransform = GetComponent<RectTransform>();
-        bubbleCount = GetComponentInChildren<TextMeshProUGUI>();
+        bubbleCountText = GetComponentInChildren<TextMeshProUGUI>();
         inputActions = new PlayerInputActions();
         isAnimated = false;
         isOpen = false;
+        isSelecting = false;
         hiddenPosition = new Vector2(0f, -1500f);
         shownPosition = new Vector2(0f, 0f);
         selectedSlot = null;
@@ -94,22 +92,39 @@ public class InventoryUI : MonoBehaviour
         {
             Debug.Log("InventoryUI reference for playerController is null");
         }
-        bubbleRectTransform.anchoredPosition = new Vector2(570f,350f);
-        bubbleCount.text = playerStats.bubbles.ToString();
+        
+        if (optionsBubble == null)
+        {
+            Debug.Log("InventoryUI reference for OptionsBubble is null");
+        }
+        bubbleCountRectTransform.anchoredPosition = new Vector2(570f,350f);
+        bubbleCountText.text = PlayerStats.Instance.bubbles.ToString();
     }
     void Update()
     {
-        if (inventoryInput != 0 && !isAnimated)
+        // Open inventory when button is pressed
+        if (inventoryInput != 0 && !isAnimated && !isSelecting)
         {
             OpenInventory();
         }
-        if (!isCooling && isOpen)
+        // select slot
+        if (!isCooling && isOpen && !isSelecting)
         {
             if (inventorySelectInput != 0)
             {
-                if (selectedSlot != null)
+                if (selectedSlot != null && selectedSlot.itemPrefab != null)
                 {
-                    selectedSlot.SlotAction();
+                    //isSelecting = true;
+                    ItemData data = selectedSlot.itemData;
+                    optionsBubble.SetupOptions(data.options); //Shows up, Displays, and allows movement.
+                    // Block inventory movement while option is being selected
+                    // move this: selectedSlot.Drop();
+                    // to optionsBubble orrrrr, give bubble script access
+                    // to call these functions
+                    // make this decision
+                    // change list of strings to a struct that contains the name of the option
+                    // and a reference to the command that slot will execute
+                    // InventoryUI is responsible for calling Slot for funcs
                 }
                 isCooling = true;
                 if (currentCooldown != null) StopCoroutine(currentCooldown);
@@ -118,34 +133,16 @@ public class InventoryUI : MonoBehaviour
         }
         if(!isCooling && (moveInventoryInput.y != 0 || moveInventoryInput.x != 0))
         {
-            SelectSlot();
+            HoverSlot();
         }
     }
-    public bool Add(Item item)
+    public void CallFunction()
     {
-        int nextAvailableSlot = FindAvailableSlot();
-        if (nextAvailableSlot != -1)
-        {
-            Debug.Log(item + " in slot: " + nextAvailableSlot);
-            slots[nextAvailableSlot].SetContainer(item.data);
-            return true;
-        }
-        else
-        {
-            Debug.Log("the inventory is full");
-            return false;
-        }
+        //selectedSlot.
+        isSelecting = false;
     }
-    private int FindAvailableSlot()
-    {
-        if (slots[(5*selectingRow) + selectingCol].icon == null) return (5*selectingRow) + selectingCol; 
-        for (int i = 0; i < slots.Length; i++)
-        {
-            if (slots[i].icon == null) return i;
-        }
-        return -1;
-    }
-    private void SelectSlot()
+    // totally necessary
+    private void HoverSlot()
     {
         if (selectedSlot != null)
         {
@@ -167,18 +164,16 @@ public class InventoryUI : MonoBehaviour
         if (currentCooldown != null) StopCoroutine(currentCooldown);
         currentCooldown = StartCoroutine(Cooldown());
     }
-    private System.Collections.IEnumerator Cooldown()
+    private int FindAvailableSlot()
     {
-        float elaps = 0f;
-        while (elaps < 0.3f)
+        if (slots[(5*selectingRow) + selectingCol].icon == null) return (5*selectingRow) + selectingCol; 
+        for (int i = 0; i < slots.Length; i++)
         {
-            elaps += Time.deltaTime;
-            float tiempo = elaps / 0.3f;
-            yield return null;
+            if (slots[i].icon == null) return i;
         }
-        isCooling = false;
+        return -1;
     }
-    //opened by Dealers or by Player when dealing
+    //opened by dialogue system or by Player when dealing
     public void OpenInventory()
     {
         if (selectedSlot == null)
@@ -186,15 +181,19 @@ public class InventoryUI : MonoBehaviour
             selectedSlot = slots[0];
             selectedSlot.Hover();
         }
-        isAnimated = true;
-        isSelecting = !isSelecting;
-        bubbleCount.text = playerStats.bubbles.ToString();
-        Vector2 target = isOpen ? hiddenPosition : shownPosition;
-        isOpen = !isOpen;
-        playerController.isInteracting = isOpen;
+        isAnimated = true; // Necessary
+        bubbleCountText.text = PlayerStats.Instance.bubbles.ToString(); // Necessary
+        Vector2 target = isOpen ? hiddenPosition : shownPosition; // Necessary
+        if (isOpen && selectedSlot.itemPrefab != null)
+        {
+            selectedSlot.QuitHover();
+        }
+        isOpen = !isOpen; // Necessary
+        playerController.isInteracting = isOpen; // Necessary
         if (currentAnimation != null) StopCoroutine(currentAnimation);
         currentAnimation = StartCoroutine(AnimatePanel(target));
     }
+    // this function is totally independent
     private System.Collections.IEnumerator AnimatePanel(Vector2 target)
     {
         Vector2 start = rectTransform.anchoredPosition;
@@ -209,5 +208,31 @@ public class InventoryUI : MonoBehaviour
         }
         rectTransform.anchoredPosition = target;
         isAnimated = false;
+    }
+    // independent function
+    private System.Collections.IEnumerator Cooldown()
+    {
+        float elaps = 0f;
+        while (elaps < 0.3f)
+        {
+            elaps += Time.deltaTime;
+            float tiempo = elaps / 0.3f;
+            yield return null;
+        }
+        isCooling = false;
+    }
+    public bool Add(Item item)
+    {
+        int nextAvailableSlot = FindAvailableSlot();
+        if (nextAvailableSlot != -1)
+        {
+            slots[nextAvailableSlot].SetContainer(item.data);
+            return true;
+        }
+        else
+        {
+            Debug.Log("the inventory is full");
+            return false;
+        }
     }
 }
