@@ -8,7 +8,7 @@ public class CameraController : MonoBehaviour
         transform.rotation = Quaternion.Euler(new Vector3(15, 0, 0));
         if (player == null)
         {
-            Debug.Log("CameraController has no reference to PlayerController");
+            Debug.LogWarning("CameraController has no reference to PlayerController");
         }
     }
 
