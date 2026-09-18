@@ -623,7 +623,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Spawner
   slotPrefab: {fileID: 2207646332249388215, guid: 24186d87d2612234d8c0f781a5414b72, type: 3}
-  gridParent: {fileID: 59630013}
+  slotParent: {fileID: 59630013}
+  player: {fileID: 1838032432}
   inventoryUIScript: {fileID: 59630016}
   startPosition: {x: -650, y: 50}
   spacing: {x: 330, y: 300}
@@ -717,7 +718,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8358626421586054025, guid: 3e7edc5867c3a4a4c9507f02532bcf8c, type: 3}
   m_PrefabInstance: {fileID: 884249729083506529}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1838032432}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 68bbb2bbb1041804780575252212dd83, type: 3}
@@ -728,87 +729,17 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8328725124697523751, guid: 3e7edc5867c3a4a4c9507f02532bcf8c, type: 3}
   m_PrefabInstance: {fileID: 884249729083506529}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1838032432}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e36bda7c0a209b24c895d58c68ba023f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
---- !u!1 &1758901731
+--- !u!1 &1838032432 stripped
 GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 7509139578138413246, guid: 3e7edc5867c3a4a4c9507f02532bcf8c, type: 3}
+  m_PrefabInstance: {fileID: 884249729083506529}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1758901732}
-  - component: {fileID: 1758901734}
-  - component: {fileID: 1758901733}
-  m_Layer: 5
-  m_Name: Placeholder
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1758901732
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1758901731}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 337192875061719800}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 350, y: 200}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1758901733
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1758901731}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 850322685215877077, guid: 62291551d6fead047b0820db9dc99d6a, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &1758901734
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1758901731}
-  m_CullTransparentMesh: 1
 --- !u!1001 &337192875061719799
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -911,17 +842,9 @@ PrefabInstance:
       objectReference: {fileID: 1251890865}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 9164515398055493707, guid: 6331e124c01176744828ddd516dc47d8, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1758901732}
+    m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6331e124c01176744828ddd516dc47d8, type: 3}
---- !u!224 &337192875061719800 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 9164515398055493707, guid: 6331e124c01176744828ddd516dc47d8, type: 3}
-  m_PrefabInstance: {fileID: 337192875061719799}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &884249729083506529
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -974,6 +897,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 8358626421586054025, guid: 3e7edc5867c3a4a4c9507f02532bcf8c, type: 3}
+      propertyPath: inventoryScript
+      value: 
+      objectReference: {fileID: 59630016}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

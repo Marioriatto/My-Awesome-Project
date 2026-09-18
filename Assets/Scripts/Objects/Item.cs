@@ -2,11 +2,8 @@ using UnityEngine;
 
 public class Item : MonoBehaviour
 {
-    [SerializeField] string _itemName;
-    public string itemName
-    {
-        get { return _itemName; }
-    }
+    [SerializeField] ItemData _data;
+    public ItemData data {get{return _data;} set {_data = value;}}
     public virtual void Pick()
     {
     

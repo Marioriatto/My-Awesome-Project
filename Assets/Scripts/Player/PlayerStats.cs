@@ -7,7 +7,6 @@ public class PlayerStats : MonoBehaviour
     public static PlayerStats Instance { get; private set;}
     [SerializeField] string _playerName;
     [SerializeField] int _bubbles;
-    public InventoryItem[] items;
     public string playerName
     {
             get { return _playerName; }
@@ -25,7 +24,6 @@ public class PlayerStats : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        items = new InventoryItem[10];
         Instance = this;
     }
     void Start()

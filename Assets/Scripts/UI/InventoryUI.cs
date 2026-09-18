@@ -125,6 +125,29 @@ public class InventoryUI : MonoBehaviour
             SelectSlot();
         }
     }
+    public bool Add(Item item)
+    {
+        int nextAvailableSlot = FindAvailableSlot();
+        if (nextAvailableSlot != -1)
+        {
+            Debug.Log(item + " in slot: " + nextAvailableSlot);
+            slots[nextAvailableSlot].SetContainer(item.data);
+            return true;
+        }
+        else
+        {
+            Debug.Log("the inventory is full");
+            return false;
+        }
+    }
+    private int FindAvailableSlot()
+    {
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (slots[i].icon == null) return i;
+        }
+        return -1;
+    }
     private void SelectSlot()
     {
         if (selectedSlot != null)

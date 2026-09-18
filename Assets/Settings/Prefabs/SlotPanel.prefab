@@ -88,4 +88,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daa480b3c6418354ca8e15692a606fe5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Slot
-  id: 0
+  playerController: {fileID: 0}

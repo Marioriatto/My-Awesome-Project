@@ -6,7 +6,7 @@ public class PlayerInteractionBox : MonoBehaviour
     [SerializeField] PlayerController parentScript;
     void Start()
     {
-        
+        if (parentScript == null) Debug.LogWarning("Interactionbox does not have access to playercontroller");
     }
     private void OnTriggerStay(Collider other)
     {

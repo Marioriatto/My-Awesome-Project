@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     private bool isMoving;
     public bool isInteracting;
     private bool isDealing;
+    [SerializeField] InventoryUI inventoryScript;
     private PlayerInputActions inputActions;
     private PlayerStats stats;
     private Vector2 moveInput;
@@ -99,13 +100,17 @@ public class PlayerController : MonoBehaviour
             if (pickInput != 0)
             {
                 Item item = other.gameObject.GetComponent<Item>();
-                item.Pick();
+                Debug.Log(item);
+                if (inventoryScript.Add(item)) item.Pick();
             }
         }
     }
     void Start()
     {
         stats = gameObject.GetComponent<PlayerStats>();
+        if (inventoryScript == null) Debug.LogWarning("PlayerController Script does not have a reference to Inventory script");
+        if (stats == null) Debug.LogWarning("PlayerController Script does not have a reference to PlayerStats script");
+        if (inputActions == null) Debug.LogWarning("PlayerController Script does not have a reference to InputActions");
     }
     void Update()
     {

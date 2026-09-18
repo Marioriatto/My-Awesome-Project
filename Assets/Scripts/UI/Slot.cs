@@ -5,33 +5,69 @@ public class Slot : MonoBehaviour
     //item photo
     private int _id;
     public int id { get{return _id;} set {_id = value;}}
+    private GameObject _playerController;
+    public GameObject playerController {get {return _playerController;} set {_playerController = value;}}
     private RectTransform rectTransform;
+    private RectTransform iconRectTransform;
     private Vector2 normalSize;
+    private Vector2 iconNormalSize;
     private float hoverScaling;
-    private Item _item;
-    public Item item { get {return _item;} set{_item = value;}};
+    private GameObject _icon;
+    public GameObject icon {get{return _icon;} set { _icon = value;}}
+    private GameObject itemPrefab;
+    void Awake()
+    {
+        icon = null;
+        iconRectTransform = null;
+    }
     void Start()
     {
+        iconNormalSize = new Vector2(0f,0f);
         normalSize = new Vector2(250f,250f);
         hoverScaling = 1.2f;
         rectTransform = gameObject.GetComponent<RectTransform>();
     }
-    public void SetContainer(Item item)
+    public void SetContainer(ItemData data)
     {
-        _item = item;
-        // DISPLAY IMG
+        if (playerController == null) Debug.LogWarning("slot "+id+" does not have access to PlayerController");
+        if (data == null) 
+        {
+            Debug.LogWarning("item is null");
+            return;
+        }
+        if (data.prefab != null) itemPrefab = data.prefab;
+        else Debug.LogWarning("item " + data.itemName + " doesnt have a prefab");
+        icon = Instantiate(data.icon, transform);
+        iconRectTransform = icon.GetComponent<RectTransform>();
+        iconNormalSize = iconRectTransform.sizeDelta;
     }
     public void SlotAction()
     {
-        Debug.Log("selected" + id);
+        if (itemPrefab == null) Debug.Log("no prefab");
+        if (playerController == null) Debug.Log("No player");
+        GameObject droppedItem = Instantiate(itemPrefab, playerController.transform);
+        Vector3 playerPos = playerController.transform.position;
+        droppedItem.transform.position = new Vector3(playerPos.x, 0.25f, playerPos.z);
+        icon = null;
+        iconNormalSize = new Vector2(0f,0f);
+        iconRectTransform = null;
+        itemPrefab = null;
     }
     public void QuitHover()
     {
         rectTransform.sizeDelta = normalSize;
+        if (icon != null) 
+        {
+            iconRectTransform.sizeDelta = new Vector2(iconNormalSize.x, iconNormalSize.y);
+        }
     }
     public void Hover()
     {
         rectTransform.sizeDelta = new Vector2(normalSize.x * hoverScaling, normalSize.y * hoverScaling);
+        if (icon != null) 
+        {
+            iconRectTransform.sizeDelta = new Vector2(iconNormalSize.x * hoverScaling, iconNormalSize.y * hoverScaling);
+        }
     }
     void Update()
     {
