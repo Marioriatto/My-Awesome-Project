@@ -52,22 +52,39 @@ public class Slot : MonoBehaviour
     {
         if (itemPrefab == null) {Debug.Log("no item"); return;}
         if (playerController == null) {Debug.Log("No player"); return;}
+
         GameObject droppedItem = Instantiate(itemPrefab);
         Vector3 playerPos = playerController.transform.position;
         droppedItem.transform.position = new Vector3(playerPos.x, 0f, playerPos.z);
+        Discard();
+    }
+    public void Use()
+    {
+        if (itemPrefab == null) {Debug.Log("no item"); return;}
+        if (playerController == null) {Debug.Log("No player"); return;}
+    
+        //TODO
+        
+        Discard();
+    }
+    public void Give()
+    {
+        if (itemPrefab == null) {Debug.Log("no item"); return;}
+        if (playerController == null) {Debug.Log("No player"); return;}
+    
+        //TODO
+        
+        Discard();
+    }
+    public void Discard()
+    {
+        if (itemPrefab == null) {Debug.Log("no item"); return;}
+        if (playerController == null) {Debug.Log("No player"); return;}
         Destroy(icon);
         icon = null;
         iconNormalSize = new Vector2(0f,0f);
         iconRectTransform = null;
         itemPrefab = null;
-    }
-    public void QuitHover()
-    {
-        rectTransform.sizeDelta = normalSize;
-        if (icon != null) 
-        {
-            iconRectTransform.sizeDelta = new Vector2(iconNormalSize.x, iconNormalSize.y);
-        }
     }
     public void Hover()
     {
@@ -77,8 +94,12 @@ public class Slot : MonoBehaviour
             iconRectTransform.sizeDelta = new Vector2(iconNormalSize.x * hoverScaling, iconNormalSize.y * hoverScaling);
         }
     }
-    void Update()
+    public void QuitHover()
     {
-        
+        rectTransform.sizeDelta = normalSize;
+        if (icon != null) 
+        {
+            iconRectTransform.sizeDelta = new Vector2(iconNormalSize.x, iconNormalSize.y);
+        }
     }
 }

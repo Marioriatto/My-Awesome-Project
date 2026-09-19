@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
+using System.Collections.Generic;
 public class InventoryUI : MonoBehaviour
 {
     [SerializeField] OptionsBubble optionsBubble;
@@ -15,12 +16,12 @@ public class InventoryUI : MonoBehaviour
     private Vector2 hiddenPosition;
     private Vector2 moveInventoryInput;
     private float inventoryInput;
-    private float inventorySelectInput;
+    public float inventorySelectInput;
 
     private bool isOpen;
     private bool isAnimated;
-    private bool isCooling;
-    private bool isSelecting;
+    public bool isCooling;
+    public bool isSelecting;
     public int selectingRow;
     public int selectingCol;
     private Coroutine currentAnimation;
@@ -48,7 +49,7 @@ public class InventoryUI : MonoBehaviour
     }
     private void OnInventoryActionPerformed(InputAction.CallbackContext context)
     {
-        if (isOpen) inventorySelectInput = context.ReadValue<float>();
+        inventorySelectInput = context.ReadValue<float>();
     }
     private void OnInventoryActionCanceled(InputAction.CallbackContext context)
     {
@@ -110,36 +111,44 @@ public class InventoryUI : MonoBehaviour
         // select slot
         if (!isCooling && isOpen && !isSelecting)
         {
+            if(moveInventoryInput.y != 0 || moveInventoryInput.x != 0)
+            {
+                HoverSlot();
+            }
             if (inventorySelectInput != 0)
             {
                 if (selectedSlot != null && selectedSlot.itemPrefab != null)
                 {
-                    //isSelecting = true;
-                    ItemData data = selectedSlot.itemData;
-                    optionsBubble.SetupOptions(data.options); //Shows up, Displays, and allows movement.
-                    // Block inventory movement while option is being selected
-                    // move this: selectedSlot.Drop();
-                    // to optionsBubble orrrrr, give bubble script access
-                    // to call these functions
-                    // make this decision
-                    // change list of strings to a struct that contains the name of the option
-                    // and a reference to the command that slot will execute
-                    // InventoryUI is responsible for calling Slot for funcs
+                    isSelecting = true;
+                    ShowOptionsFor(selectedSlot.itemData);
                 }
                 isCooling = true;
                 if (currentCooldown != null) StopCoroutine(currentCooldown);
                 currentCooldown = StartCoroutine(Cooldown());
             }
         }
-        if(!isCooling && (moveInventoryInput.y != 0 || moveInventoryInput.x != 0))
-        {
-            HoverSlot();
-        }
     }
-    public void CallFunction()
+    public void ShowOptionsFor(ItemData data)
     {
-        //selectedSlot.
-        isSelecting = false;
+        List<DialogueOption> resolvedOptions = new List<DialogueOption>();
+
+        resolvedOptions.Add(new DialogueOption { text = "Use", onOptionSelected = selectedSlot.Use});
+        resolvedOptions.Add(new DialogueOption { text = "Swap", onOptionSelected = Swap});
+        resolvedOptions.Add(new DialogueOption { text = "Drop", onOptionSelected = selectedSlot.Drop});
+
+        foreach (string optionText in data.options)
+        {
+            System.Action action = optionText switch
+            {
+                "Eat" => Eat,
+                "Sell" => Sell,
+                "Give" => selectedSlot.Give,
+                _ => null
+            };
+
+            resolvedOptions.Add(new DialogueOption { text = optionText, onOptionSelected = action});
+        }
+        optionsBubble.SetupOptions(resolvedOptions, selectedSlot.transform.position);
     }
     // totally necessary
     private void HoverSlot()
@@ -179,17 +188,18 @@ public class InventoryUI : MonoBehaviour
         if (selectedSlot == null)
         {
             selectedSlot = slots[0];
-            selectedSlot.Hover();
         }
-        isAnimated = true; // Necessary
-        bubbleCountText.text = PlayerStats.Instance.bubbles.ToString(); // Necessary
-        Vector2 target = isOpen ? hiddenPosition : shownPosition; // Necessary
-        if (isOpen && selectedSlot.itemPrefab != null)
+        isAnimated = true;
+        bubbleCountText.text = PlayerStats.Instance.bubbles.ToString();
+        Vector2 target = isOpen ? hiddenPosition : shownPosition;
+        isOpen = !isOpen;
+        selectedSlot.Hover();
+        playerController.isInteracting = isOpen;
+        if (!isOpen)
         {
-            selectedSlot.QuitHover();
+            if (selectedSlot.itemPrefab != null) selectedSlot.QuitHover();
         }
-        isOpen = !isOpen; // Necessary
-        playerController.isInteracting = isOpen; // Necessary
+        else inventorySelectInput = 0f;
         if (currentAnimation != null) StopCoroutine(currentAnimation);
         currentAnimation = StartCoroutine(AnimatePanel(target));
     }
@@ -234,5 +244,23 @@ public class InventoryUI : MonoBehaviour
             Debug.Log("the inventory is full");
             return false;
         }
+    }
+    public void Sell()
+    {
+        if (currentCooldown != null) StopCoroutine(currentCooldown);
+        currentCooldown = StartCoroutine(Cooldown());
+        if (!selectedSlot.itemData.isSaleable) return;
+        PlayerStats.Instance.bubbles += selectedSlot.itemData.price;
+        selectedSlot.Discard();
+    }
+    public void Eat()
+    {
+        if (currentCooldown != null) StopCoroutine(currentCooldown);
+        currentCooldown = StartCoroutine(Cooldown());
+        selectedSlot.Discard();
+    }
+    public void Swap()
+    {
+        // Volver a seleccionar con quien se pretenda intercambiar
     }
 }

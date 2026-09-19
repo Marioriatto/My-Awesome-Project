@@ -1,11 +1,7 @@
 using UnityEngine;
-using TMPro;
 
 public class DialogueBubble : MonoBehaviour
 {
-    [SerializeField] protected RectTransform rectTransform;
-    [SerializeField] protected TextMeshProUGUI text;
-
     public virtual void Show()
     {
         gameObject.SetActive(true);
