@@ -46,10 +46,10 @@ public class Slot : MonoBehaviour
         icon = Instantiate(data.icon, transform);
         iconRectTransform = icon.GetComponent<RectTransform>();
         iconNormalSize = iconRectTransform.sizeDelta;
-        Hover();
     }
     public void Drop()
     {
+        Debug.Log("Drop");
         if (itemPrefab == null) {Debug.Log("no item"); return;}
         if (playerController == null) {Debug.Log("No player"); return;}
 

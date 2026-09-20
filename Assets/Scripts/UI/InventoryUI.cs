@@ -14,7 +14,7 @@ public class InventoryUI : MonoBehaviour
     private RectTransform rectTransform;
     private Vector2 shownPosition;
     private Vector2 hiddenPosition;
-    private Vector2 moveInventoryInput;
+    public Vector2 moveInventoryInput;
     private float inventoryInput;
     public float inventorySelectInput;
 
@@ -22,6 +22,7 @@ public class InventoryUI : MonoBehaviour
     private bool isAnimated;
     public bool isCooling;
     public bool isSelecting;
+    public bool isSelling;
     public int selectingRow;
     public int selectingCol;
     private Coroutine currentAnimation;
@@ -103,12 +104,12 @@ public class InventoryUI : MonoBehaviour
     }
     void Update()
     {
-        // Open inventory when button is pressed
-        if (inventoryInput != 0 && !isAnimated && !isSelecting)
+        // OPEN AND CLOSE INVENTORY
+        if (inventoryInput != 0 && !isAnimated && !isSelecting && !isSelling)
         {
             OpenInventory();
         }
-        // select slot
+        // SELECT AND MOVE THROUGH SLOTS
         if (!isCooling && isOpen && !isSelecting)
         {
             if(moveInventoryInput.y != 0 || moveInventoryInput.x != 0)
@@ -117,14 +118,28 @@ public class InventoryUI : MonoBehaviour
             }
             if (inventorySelectInput != 0)
             {
-                if (selectedSlot != null && selectedSlot.itemPrefab != null)
+                if (isSelling)
                 {
-                    isSelecting = true;
-                    ShowOptionsFor(selectedSlot.itemData);
+                    if (selectedSlot != null && selectedSlot.itemPrefab != null)
+                    {
+                        if (Sell())
+                        {
+                            OpenInventory();
+                            isSelling = false;
+                        }
+                    }
                 }
-                isCooling = true;
-                if (currentCooldown != null) StopCoroutine(currentCooldown);
-                currentCooldown = StartCoroutine(Cooldown());
+                else
+                {
+                    if (selectedSlot != null && selectedSlot.itemPrefab != null)
+                    {
+                        isSelecting = true;
+                        ShowOptionsFor(selectedSlot.itemData);
+                    }
+                    isCooling = true;
+                    if (currentCooldown != null) StopCoroutine(currentCooldown);
+                    currentCooldown = StartCoroutine(Cooldown());
+                }
             }
         }
     }
@@ -132,23 +147,22 @@ public class InventoryUI : MonoBehaviour
     {
         List<DialogueOption> resolvedOptions = new List<DialogueOption>();
 
-        resolvedOptions.Add(new DialogueOption { text = "Use", onOptionSelected = selectedSlot.Use});
-        resolvedOptions.Add(new DialogueOption { text = "Swap", onOptionSelected = Swap});
-        resolvedOptions.Add(new DialogueOption { text = "Drop", onOptionSelected = selectedSlot.Drop});
-
         foreach (string optionText in data.options)
         {
             System.Action action = optionText switch
             {
+                "Use" => selectedSlot.Use,
                 "Eat" => Eat,
-                "Sell" => Sell,
                 "Give" => selectedSlot.Give,
                 _ => null
             };
 
             resolvedOptions.Add(new DialogueOption { text = optionText, onOptionSelected = action});
         }
-        optionsBubble.SetupOptions(resolvedOptions, selectedSlot.transform.position);
+        resolvedOptions.Add(new DialogueOption { text = "Swap", onOptionSelected = Swap});
+        resolvedOptions.Add(new DialogueOption { text = "Drop", onOptionSelected = selectedSlot.Drop});
+
+        optionsBubble.SetupOptions(resolvedOptions, selectedSlot.GetComponent<RectTransform>().anchoredPosition);
     }
     // totally necessary
     private void HoverSlot()
@@ -158,16 +172,10 @@ public class InventoryUI : MonoBehaviour
             selectedSlot.QuitHover();
         }
         isCooling = true;
-        // COL
-        int sum = (int)moveInventoryInput.x + selectingCol;
-        if (sum < 0) selectingCol = 4;
-        else if (sum > 4) selectingCol = 0;
-        else selectingCol = sum;
-        // ROW
-        sum = (int)moveInventoryInput.y + selectingRow;
-        if (sum < 0) selectingRow = 1;
-        else if (sum > 1) selectingRow = 0;
-        else selectingRow = sum;
+        selectingCol += (int)moveInventoryInput.x;
+        selectingCol = (selectingCol < 0) ? 4 : selectingCol % 5;
+        selectingRow += (int)moveInventoryInput.y;
+        selectingRow = (selectingRow < 0) ? 1 : selectingRow % 2;
         selectedSlot = slots[(5 * selectingRow) + selectingCol];
         selectedSlot.Hover();
         if (currentCooldown != null) StopCoroutine(currentCooldown);
@@ -226,7 +234,6 @@ public class InventoryUI : MonoBehaviour
         while (elaps < 0.3f)
         {
             elaps += Time.deltaTime;
-            float tiempo = elaps / 0.3f;
             yield return null;
         }
         isCooling = false;
@@ -245,22 +252,26 @@ public class InventoryUI : MonoBehaviour
             return false;
         }
     }
-    public void Sell()
+    public bool Sell()
     {
+        Debug.Log("Sell");
         if (currentCooldown != null) StopCoroutine(currentCooldown);
         currentCooldown = StartCoroutine(Cooldown());
-        if (!selectedSlot.itemData.isSaleable) return;
+        if (!selectedSlot.itemData.isSaleable) return false;
         PlayerStats.Instance.bubbles += selectedSlot.itemData.price;
         selectedSlot.Discard();
+        return true;
     }
     public void Eat()
     {
+        Debug.Log("Eat");
         if (currentCooldown != null) StopCoroutine(currentCooldown);
         currentCooldown = StartCoroutine(Cooldown());
         selectedSlot.Discard();
     }
     public void Swap()
     {
+        Debug.Log("Swap");
         // Volver a seleccionar con quien se pretenda intercambiar
     }
 }
