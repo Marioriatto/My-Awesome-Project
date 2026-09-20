@@ -8,34 +8,29 @@ public class OptionsBubble : DialogueBubble
     [SerializeField] InventoryUI inventoryScript;
     [SerializeField] GameObject textOptionPrefab;
     [SerializeField] GameObject hoverPanel;
+    private RectTransform HPRectTransform; 
     private GameObject[] textOptionsList;
-    private RectTransform rectTransform;
     private int selectedIndex; 
     [System.NonSerialized] public float spacing = 67f;
     [System.NonSerialized] public float bubbleWidth = 300f;
 
-    private bool isAnimated;
-    private bool isCooling;
-    private Coroutine currentAnimation;
-    private Coroutine currentCooldown;
-    
-    private void Awake()
-    {
-        rectTransform = GetComponent<RectTransform>();
-    }
-
+    protected bool isCooling;
+    protected Coroutine currentCooldown;
     public void SetupOptions(List<DialogueOption> options, Vector2 newPosition)
     {
         Show();
         this.options = options;
-        
+        selectedIndex = 0;
         Vector2 finalSize = new Vector2(bubbleWidth, spacing * (options.Count + 1));
         rectTransform.sizeDelta = finalSize;
         rectTransform.anchoredPosition = new Vector2(newPosition.x + bubbleWidth ,newPosition.y);
-
+        // HoverPanel
+        HPRectTransform = hoverPanel.GetComponent<RectTransform>();
+        HPRectTransform.sizeDelta = new Vector2(bubbleWidth, rectTransform.sizeDelta.y / options.Count);
+        HPRectTransform.anchoredPosition = new Vector2(0f, spacing * (options.Count / 2));
         textOptionsList = new GameObject[options.Count];
         DisplayOptions();
-    }
+    } // no se porque no quieren darte la oportunidad
     private void DisplayOptions()
     {
         for (int i = 0; i < options.Count; i++) 
@@ -44,11 +39,10 @@ public class OptionsBubble : DialogueBubble
 
             RectTransform prefabRectTransform = textOptionsList[i].GetComponent<RectTransform>();
             
-            prefabRectTransform.anchoredPosition = new Vector2(0f, -spacing* i);
+            prefabRectTransform.anchoredPosition = new Vector2(0f, (spacing * (options.Count / 2) - spacing * i) + 20);
 
             TextMeshProUGUI prefabTextMeshPro = textOptionsList[i].GetComponent<TextMeshProUGUI>();
             prefabTextMeshPro.text = options[i].text;
-            Debug.Log(prefabTextMeshPro.text);
         }
         PopIn();
     }
@@ -58,12 +52,12 @@ public class OptionsBubble : DialogueBubble
         {
             if (inventoryScript.moveInventoryInput.y != 0)
             {
+                TextHover();
                 isCooling = true;
                 if (currentCooldown != null) StopCoroutine(currentCooldown);
                 currentCooldown = StartCoroutine(Cooldown());
                 selectedIndex -= (int)inventoryScript.moveInventoryInput.y;
                 selectedIndex = (selectedIndex < 0) ? options.Count - 1 : selectedIndex % options.Count;
-                Debug.Log(options[selectedIndex].text);
                 TextHover();
             }
             if (inventoryScript.inventorySelectInput != 0)
@@ -74,35 +68,19 @@ public class OptionsBubble : DialogueBubble
             }
         }
     }
-    void PopIn()
+    void TextHover()
     {
+        Vector2 target = new Vector2(0f, spacing * (options.Count / 2) - spacing * selectedIndex);
         isAnimated = true;
         if (currentAnimation != null) StopCoroutine(currentAnimation);
-        currentAnimation = StartCoroutine(AnimateScale(Vector3.zero, Vector3.one));
+        currentAnimation = StartCoroutine(AnimateHoverPanel(HPRectTransform.anchoredPosition, target));
+    }
+    protected override void PopIn()
+    {
+        base.PopIn();
         isCooling = true;
         if (currentCooldown != null) StopCoroutine(currentCooldown);
         currentCooldown = StartCoroutine(Cooldown());
-    }
-    void PopOut()
-    {
-        isAnimated = true;
-        if (currentAnimation != null) StopCoroutine(currentAnimation);
-        currentAnimation = StartCoroutine(AnimateScale(Vector3.one, Vector3.zero));
-    }
-    private System.Collections.IEnumerator AnimateScale(Vector3 start, Vector3 target)
-    {
-        float elapsed = 0f;
-        while (elapsed < 0.3f)
-        {
-            elapsed += Time.deltaTime;
-            float tiempo = elapsed / 0.3f;
-            rectTransform.localScale = Vector2.Lerp(start, target, tiempo);
-            yield return null;
-        }
-        rectTransform.localScale = target;
-        isAnimated = false;
-
-        if (target == Vector3.zero) Hide();
     }
     private System.Collections.IEnumerator Cooldown()
     {
@@ -114,9 +92,17 @@ public class OptionsBubble : DialogueBubble
         }
         isCooling = false;
     }
-    void TextHover()
+    private System.Collections.IEnumerator AnimateHoverPanel(Vector2 start, Vector2 target)
     {
-        RectTransform HVrectTransform = hoverPanel.GetComponent<RectTransform>();
-        HVrectTransform.anchoredPosition = new Vector2(0f, -spacing * selectedIndex);
+        float elapsed = 0f;
+        while (elapsed < 0.1f)
+        {
+            elapsed += Time.deltaTime;
+            float tiempo = elapsed / 0.1f;
+            HPRectTransform.anchoredPosition = Vector2.Lerp(start, target, tiempo);
+            yield return null;
+        }
+        HPRectTransform.anchoredPosition = target;
+        isAnimated = false;
     }
 }

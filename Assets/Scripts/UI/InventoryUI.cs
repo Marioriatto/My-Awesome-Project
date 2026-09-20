@@ -216,7 +216,6 @@ public class InventoryUI : MonoBehaviour
     {
         Vector2 start = rectTransform.anchoredPosition;
         float elapsed = 0f;
-        
         while (elapsed < 0.3f)
         {
             elapsed += Time.deltaTime;
@@ -254,7 +253,6 @@ public class InventoryUI : MonoBehaviour
     }
     public bool Sell()
     {
-        Debug.Log("Sell");
         if (currentCooldown != null) StopCoroutine(currentCooldown);
         currentCooldown = StartCoroutine(Cooldown());
         if (!selectedSlot.itemData.isSaleable) return false;
@@ -264,14 +262,12 @@ public class InventoryUI : MonoBehaviour
     }
     public void Eat()
     {
-        Debug.Log("Eat");
         if (currentCooldown != null) StopCoroutine(currentCooldown);
         currentCooldown = StartCoroutine(Cooldown());
         selectedSlot.Discard();
     }
     public void Swap()
     {
-        Debug.Log("Swap");
         // Volver a seleccionar con quien se pretenda intercambiar
     }
 }

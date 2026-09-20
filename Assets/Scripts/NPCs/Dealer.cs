@@ -23,5 +23,8 @@ public class Dealer : NPC
         //      create dialogue class
         //      create text dialogue child
     }
-
+    void Update()
+    {
+        // ahora toca el dialogo :v
+    }
 }

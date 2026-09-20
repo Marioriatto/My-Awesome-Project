@@ -49,7 +49,6 @@ public class Slot : MonoBehaviour
     }
     public void Drop()
     {
-        Debug.Log("Drop");
         if (itemPrefab == null) {Debug.Log("no item"); return;}
         if (playerController == null) {Debug.Log("No player"); return;}
 

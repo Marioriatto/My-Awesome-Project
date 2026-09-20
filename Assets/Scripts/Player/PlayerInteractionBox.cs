@@ -32,8 +32,8 @@ public class PlayerInteractionBox : MonoBehaviour
         {
             if (parentScript.pickInput != 0)
             {
-                NPC dealer = other.gameObject.GetComponent<NPC>();
-                dealer.Dialogue();
+                //NPC dealer = other.gameObject.GetComponent<NPC>();
+                //dealer.Dialogue();
             }
         }
     }
