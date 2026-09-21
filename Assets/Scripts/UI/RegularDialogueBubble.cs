@@ -6,41 +6,71 @@ using UnityEngine.UI;
 
 public class RegularDialogueBubble : DialogueBubble
 {
-    [SerializeField] protected TextMeshProUGUI textMeshPro;
-    [SerializeField] private GameObject dialoguePanel;
+    [SerializeField] protected TextMeshProUGUI textMeshPro; // ready
+    [SerializeField] OptionsBubble optionsBubble; // ready
+    // definir forma de invocar a options bubble desde la lista de dialogos
+    private PlayerInputActions inputActions; // cambiar por referencia al singleton
     private List<string> dialogues;
+    private float continueInput;
+    private bool isReady;
     private Coroutine currentCooldown;
-    public void SetText(string content)
+
+    protected override void Awake()
     {
-        
+        base.Awake();
+        textMeshPro = GetComponent<TextMeshProUGUI>();
+        currentCooldown = null;
     }
-    void Update()
+    private void OnEnable()
     {
-        /*
-        if (input != 0)
+        inputActions.Player.Enable();
+        inputActions.Player.Action.performed += OnDialogueActionPerformed;
+        inputActions.Player.Action.canceled += OnDialogueActionCanceled;
+    }
+    private void OnDisable()
+    {
+        inputActions.Player.Action.performed -= OnDialogueActionPerformed;
+        inputActions.Player.Action.canceled -= OnDialogueActionCanceled;
+        inputActions.Player.Disable();
+    }
+    private void OnDialogueActionPerformed(InputAction.CallbackContext context)
+    {
+        continueInput = context.ReadValue<float>();
+    }
+    private void OnDialogueActionCanceled(InputAction.CallbackContext context)
+    {
+        continueInput = 0f;
+    }
+    public void SetText(List<string> content)
+    {
+        dialogues = content;
+        PopIn();
+        Typewriter();
+    }
+    void Start()
+    {
+        continueInput = 0;
+        isReady = false;
+    }
+    private System.Collections.IEnumerator Typewriter()
+    {
+        while (isAnimated)
         {
-            
+            yield return null;
         }
-        */
-    }
-    // hacer la funcion para typewriter del textmeshpro
-    // corutina con concatenacion cada 0.1 segs
-    // crear una funcion que recorra la lista de cadenas de dialogo
-    // esa funcion llama a la animacion typewriter
-    // al terminar de animar activar la opcion de avanzar
-    void Typewriter()
-    {
-        /*
         foreach(string phrase in dialogues)
         {
+            while (continueInput == 0 || !isReady)
+            {
+                yield return null;
+            }
+            isReady = false;
             if (currentCooldown != null) StopCoroutine(currentCooldown);
-            currentCooldown = StartCoroutine(TypewriterCooldown(phrase);
-            avanzar solo si presiona el boton qliao
+            currentCooldown = StartCoroutine(TypewriterAnimation(phrase));
         }
-        */
-        //isContinuable = true;
-    }    
-    private System.Collections.IEnumerator TypewriterCooldown(string phrase)
+        PopOut();
+    }
+    private System.Collections.IEnumerator TypewriterAnimation(string phrase)
     {
         textMeshPro.text = "";
         foreach(char letter in phrase)
@@ -53,6 +83,6 @@ public class RegularDialogueBubble : DialogueBubble
                 yield return null;
             }
         }
-        isAnimated = false;
+        isReady = true;
     }
 }

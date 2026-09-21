@@ -6,7 +6,7 @@ public class DialogueBubble : MonoBehaviour
     protected bool isAnimated;
     protected Coroutine currentAnimation;
     
-    private void Awake()
+    protected virtual void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
     }

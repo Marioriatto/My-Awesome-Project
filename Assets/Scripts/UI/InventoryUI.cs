@@ -147,12 +147,10 @@ public class InventoryUI : MonoBehaviour
                 currentCooldown = StartCoroutine(Cooldown());
             }
         }
-        // OPEN AND CLOSE INVENTORY
         if (inventoryInput != 0 && !isAnimated && !isSelecting && !isSelling)
         {
             OpenInventory();
         }
-        // SELECT AND MOVE THROUGH SLOTS
         if (!isCooling && isOpen && !isSelecting)
         {
             if(moveInventoryInput.y != 0 || moveInventoryInput.x != 0)

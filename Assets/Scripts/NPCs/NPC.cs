@@ -7,6 +7,7 @@ public class NPC : MonoBehaviour
         "Marlon", "Charlie", "George", "Ian"
     };
     protected bool isDialogue;
+    protected bool isMoving;
     public static int npcID;
     private string _npcName;
     public string npcName { get{ return _npcName;} set{_npcName = value;}}
@@ -14,23 +15,26 @@ public class NPC : MonoBehaviour
     {
         npcName = names[Random.Range(0,names.Length)];
     }
+    protected virtual void Start()
+    {
+        isMoving = false;
+    }
     public virtual void Dialogue()
     {
         isDialogue = true;
-        //TODODIALOGUE AKA CALL DIALOGUE UI
     }
     protected virtual void Movement()
     {
-        //rotate towards target
+        /*
+            define random target
+                rotation and distance (polar coordinates)
+            define random idle time
+        */
     }
-    protected virtual Vector3 SetTarget(int x, int z)
+    protected virtual Vector3 SetTarget()
     {
-        return new Vector3(x,0,z);
-    }
-    void Start()
-    {
-        
-    }
+        return new Vector3(Random.Range(-10f,10f),0,Random.Range(-10f,10f));
+    }   
     void Update()
     {
         if (isDialogue)
@@ -39,7 +43,10 @@ public class NPC : MonoBehaviour
             //call select func
             //if sell or buy
         }
-        //Movement  
-        Movement();   
+        if (!isMoving)
+        {
+            //Movement  
+            Movement();    
+        }  
     }
 }

@@ -20,11 +20,5 @@ public class Dealer : NPC
         inventoryScript.isSelling = true;
         inventoryScript.OpenInventory();
         // create dialogue system
-        //      create dialogue class
-        //      create text dialogue child
-    }
-    void Update()
-    {
-        // ahora toca el dialogo :v
     }
 }

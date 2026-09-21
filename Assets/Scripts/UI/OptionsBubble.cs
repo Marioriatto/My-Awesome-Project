@@ -9,8 +9,8 @@ public class OptionsBubble : DialogueBubble
     [SerializeField] GameObject textOptionPrefab;
     [SerializeField] GameObject hoverPanel;
     private GameObject[] textOptionsList;
-    private RectTransform HPRectTransform; 
-    private int selectedIndex; 
+    private RectTransform HPRectTransform;
+    private int selectedIndex;
     [System.NonSerialized] public float spacing = 67f;
     [System.NonSerialized] public float bubbleWidth = 300f;
     protected bool isCooling;
