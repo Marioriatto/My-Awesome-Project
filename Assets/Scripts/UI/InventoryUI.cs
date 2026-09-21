@@ -2,11 +2,13 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
 using System.Collections.Generic;
+using UnityEngine.Rendering;
 public class InventoryUI : MonoBehaviour
 {
     [SerializeField] OptionsBubble optionsBubble;
     public Slot[] slots;
     private Slot selectedSlot;
+    private Slot swappingSlot;
     private TextMeshProUGUI bubbleCountText;
     private PlayerInputActions inputActions;
     [SerializeField] PlayerController playerController;
@@ -17,7 +19,9 @@ public class InventoryUI : MonoBehaviour
     public Vector2 moveInventoryInput;
     private float inventoryInput;
     public float inventorySelectInput;
-
+    private bool isSwapping;
+    private int swappingRow;
+    private int swappingCol;
     private bool isOpen;
     private bool isAnimated;
     public bool isCooling;
@@ -81,15 +85,19 @@ public class InventoryUI : MonoBehaviour
         isAnimated = false;
         isOpen = false;
         isSelecting = false;
+        isSwapping = false;
         hiddenPosition = new Vector2(0f, -1500f);
         shownPosition = new Vector2(0f, 0f);
         selectedSlot = null;
+        swappingSlot = null;
     }
     void Start()
     {
         rectTransform.anchoredPosition = hiddenPosition;
         selectingCol = 0;
         selectingRow = 0;
+        swappingRow = 0;
+        swappingCol = 0;
         if (playerController == null)
         {
             Debug.Log("InventoryUI reference for playerController is null");
@@ -104,6 +112,41 @@ public class InventoryUI : MonoBehaviour
     }
     void Update()
     {
+        if (isOpen && isSelecting && isSwapping && !isCooling)
+        {
+            if(moveInventoryInput.y != 0 || moveInventoryInput.x != 0)
+            {
+                HoverSlot();
+            }
+            if (inventorySelectInput != 0)
+            {
+                if (swappingSlot != null)
+                {
+                    ItemData temp = null;
+                    selectedSlot.StopGlow();
+                    if (swappingSlot.itemData != null)
+                    {
+                        temp = swappingSlot.itemData;
+                    }
+                    swappingSlot.Discard();
+                    swappingSlot.SetContainer(selectedSlot.itemData);
+                    selectedSlot.Discard();
+                    if (temp != null) selectedSlot.SetContainer(temp);
+                    isSelecting = false;
+                    isSwapping = false;
+                    selectingCol = swappingCol;
+                    selectingRow = swappingRow;
+                    selectedSlot = swappingSlot;
+                    swappingSlot = null;
+                    swappingCol = 0;
+                    swappingRow = 0;
+                    selectedSlot.Hover();
+                }
+                isCooling = true;
+                if (currentCooldown != null) StopCoroutine(currentCooldown);
+                currentCooldown = StartCoroutine(Cooldown());
+            }
+        }
         // OPEN AND CLOSE INVENTORY
         if (inventoryInput != 0 && !isAnimated && !isSelecting && !isSelling)
         {
@@ -151,33 +194,50 @@ public class InventoryUI : MonoBehaviour
         {
             System.Action action = optionText switch
             {
-                "Use" => selectedSlot.Use,
+                "Use" => Use,
                 "Eat" => Eat,
-                "Give" => selectedSlot.Give,
+                "Give" => Give,
                 _ => null
             };
 
             resolvedOptions.Add(new DialogueOption { text = optionText, onOptionSelected = action});
         }
         resolvedOptions.Add(new DialogueOption { text = "Swap", onOptionSelected = Swap});
-        resolvedOptions.Add(new DialogueOption { text = "Drop", onOptionSelected = selectedSlot.Drop});
+        resolvedOptions.Add(new DialogueOption { text = "Drop", onOptionSelected = Drop});
 
         optionsBubble.SetupOptions(resolvedOptions, selectedSlot.GetComponent<RectTransform>().anchoredPosition);
     }
     // totally necessary
     private void HoverSlot()
     {
-        if (selectedSlot != null)
+        if (isSwapping)
         {
-            selectedSlot.QuitHover();
+            if (swappingSlot != null)
+            {
+                swappingSlot.QuitHover();
+            }
+            isCooling = true;
+            swappingCol += (int)moveInventoryInput.x;
+            swappingCol = (swappingCol < 0) ? 4 : swappingCol % 5;
+            swappingRow += (int)moveInventoryInput.y;
+            swappingRow = (swappingRow < 0) ? 1 : swappingRow % 2;
+            swappingSlot = slots[(5 * swappingRow) + swappingCol];
+            swappingSlot.Hover();
         }
-        isCooling = true;
-        selectingCol += (int)moveInventoryInput.x;
-        selectingCol = (selectingCol < 0) ? 4 : selectingCol % 5;
-        selectingRow += (int)moveInventoryInput.y;
-        selectingRow = (selectingRow < 0) ? 1 : selectingRow % 2;
-        selectedSlot = slots[(5 * selectingRow) + selectingCol];
-        selectedSlot.Hover();
+        else
+        {
+            if (selectedSlot != null)
+            {
+                selectedSlot.QuitHover();
+            }
+            isCooling = true;
+            selectingCol += (int)moveInventoryInput.x;
+            selectingCol = (selectingCol < 0) ? 4 : selectingCol % 5;
+            selectingRow += (int)moveInventoryInput.y;
+            selectingRow = (selectingRow < 0) ? 1 : selectingRow % 2;
+            selectedSlot = slots[(5 * selectingRow) + selectingCol];
+            selectedSlot.Hover();
+        }
         if (currentCooldown != null) StopCoroutine(currentCooldown);
         currentCooldown = StartCoroutine(Cooldown());
     }
@@ -260,14 +320,34 @@ public class InventoryUI : MonoBehaviour
         selectedSlot.Discard();
         return true;
     }
+    public void Use()
+    {
+        selectedSlot.Use();
+    }
+    public void Give()
+    {
+        selectedSlot.Give();
+    }
     public void Eat()
     {
         if (currentCooldown != null) StopCoroutine(currentCooldown);
         currentCooldown = StartCoroutine(Cooldown());
         selectedSlot.Discard();
+        isSelecting = false;
     }
     public void Swap()
     {
-        // Volver a seleccionar con quien se pretenda intercambiar
+        isSwapping = true;
+        selectedSlot.StartGlow();
+        isCooling = true;
+        swappingCol = selectingCol;
+        swappingRow = selectingRow;
+        if(currentCooldown != null) StopCoroutine(currentCooldown);
+        currentCooldown = StartCoroutine(Cooldown());
+    }
+    public void Drop()
+    {
+        selectedSlot.Drop();
+        isSelecting = false;
     }
 }

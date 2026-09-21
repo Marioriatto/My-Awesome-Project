@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Slot : MonoBehaviour
 {
@@ -16,15 +17,23 @@ public class Slot : MonoBehaviour
     public GameObject icon {get{return _icon;} set { _icon = value;}}
     public GameObject itemPrefab;
     public ItemData itemData;
+    
+    private bool isAnimated;
+    public bool isAnimatingGlow;
+    private Image image;
+    private Coroutine currentAnimation;
     void Awake()
     {
         icon = null;
         iconRectTransform = null;
         itemData = null;
         itemPrefab = null;
+        currentAnimation = null;
     }
     void Start()
     {
+        isAnimatingGlow = false;
+        image = GetComponent<Image>();
         iconNormalSize = new Vector2(0f,0f);
         normalSize = new Vector2(250f,250f);
         hoverScaling = 1.2f;
@@ -79,11 +88,11 @@ public class Slot : MonoBehaviour
     {
         if (itemPrefab == null) {Debug.Log("no item"); return;}
         if (playerController == null) {Debug.Log("No player"); return;}
-        Destroy(icon);
-        icon = null;
-        iconNormalSize = new Vector2(0f,0f);
-        iconRectTransform = null;
+        if (currentAnimation != null) StopCoroutine(currentAnimation);
+        currentAnimation = StartCoroutine(Dissapear());
         itemPrefab = null;
+        itemData = null;
+        QuitHover();
     }
     public void Hover()
     {
@@ -99,6 +108,52 @@ public class Slot : MonoBehaviour
         if (icon != null) 
         {
             iconRectTransform.sizeDelta = new Vector2(iconNormalSize.x, iconNormalSize.y);
+        }
+    }
+    protected System.Collections.IEnumerator Dissapear()
+    {
+        if (iconRectTransform != null)
+        {
+            float elapsed = 0f;
+            while (elapsed < 0.1f)
+            {
+                elapsed += Time.deltaTime;
+                float tiempo = elapsed / 0.1f;
+                iconRectTransform.localScale = Vector2.Lerp(Vector3.one, Vector3.zero, tiempo);
+                yield return null;
+            }
+            iconRectTransform.localScale = Vector3.zero;
+            isAnimated = false;
+            Destroy(icon);
+            icon = null;
+            iconNormalSize = new Vector2(0f,0f);
+            iconRectTransform = null;
+        }
+    }
+    public void StartGlow()
+    {
+        isAnimatingGlow = true;
+        if (currentAnimation != null) StopCoroutine(currentAnimation);
+        currentAnimation = StartCoroutine(AnimateGlow());
+    }
+    public void StopGlow()
+    {
+        isAnimatingGlow = false;
+        if (currentAnimation != null) StopCoroutine(currentAnimation);
+        image.color = Color.white;
+    }
+    private System.Collections.IEnumerator AnimateGlow()
+    {
+        float elapsed = 0f;
+
+        while(isAnimatingGlow)
+        {
+            elapsed += Time.deltaTime;
+            float tiempo = (elapsed % 1f) / 1f;
+            float angle = tiempo * Mathf.PI * 2f;
+            float colorValue = (Mathf.Sin(angle) + 1f) * (255f / 2f); 
+            image.color = new Color32(255, (byte)colorValue, (byte)colorValue, 255);
+            yield return null;
         }
     }
 }

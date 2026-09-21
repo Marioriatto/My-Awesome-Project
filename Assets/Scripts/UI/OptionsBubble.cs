@@ -8,12 +8,11 @@ public class OptionsBubble : DialogueBubble
     [SerializeField] InventoryUI inventoryScript;
     [SerializeField] GameObject textOptionPrefab;
     [SerializeField] GameObject hoverPanel;
-    private RectTransform HPRectTransform; 
     private GameObject[] textOptionsList;
+    private RectTransform HPRectTransform; 
     private int selectedIndex; 
     [System.NonSerialized] public float spacing = 67f;
     [System.NonSerialized] public float bubbleWidth = 300f;
-
     protected bool isCooling;
     protected Coroutine currentCooldown;
     public void SetupOptions(List<DialogueOption> options, Vector2 newPosition)
@@ -63,7 +62,6 @@ public class OptionsBubble : DialogueBubble
             if (inventoryScript.inventorySelectInput != 0)
             {
                 options[selectedIndex].onOptionSelected?.Invoke();
-                inventoryScript.isSelecting = false;
                 PopOut();
             }
         }
@@ -81,6 +79,18 @@ public class OptionsBubble : DialogueBubble
         isCooling = true;
         if (currentCooldown != null) StopCoroutine(currentCooldown);
         currentCooldown = StartCoroutine(Cooldown());
+    }
+    protected override void PopOut()
+    {
+        base.PopOut();
+        DiscardPrefabs();
+    }
+    private void DiscardPrefabs()
+    {
+        for (int i = 0; i < options.Count; i++)
+        {
+            if (textOptionsList[i] != null) Destroy(textOptionsList[i]);
+        }
     }
     private System.Collections.IEnumerator Cooldown()
     {

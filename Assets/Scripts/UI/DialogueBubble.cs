@@ -21,6 +21,7 @@ public class DialogueBubble : MonoBehaviour
         isAnimated = true;
         if (currentAnimation != null) StopCoroutine(currentAnimation);
         currentAnimation = StartCoroutine(AnimateScale(Vector3.one, Vector3.zero));
+        
     }
     void Start()
     {
