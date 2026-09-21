@@ -11,7 +11,6 @@ public class RegularDialogueBubble : DialogueBubble
     // definir forma de invocar a options bubble desde la lista de dialogos
     private PlayerInputActions inputActions; // cambiar por referencia al singleton
     private List<string> dialogues;
-    private float continueInput;
     private bool isReady;
     private Coroutine currentCooldown;
 
@@ -21,26 +20,6 @@ public class RegularDialogueBubble : DialogueBubble
         textMeshPro = GetComponent<TextMeshProUGUI>();
         currentCooldown = null;
     }
-    private void OnEnable()
-    {
-        inputActions.Player.Enable();
-        inputActions.Player.Action.performed += OnDialogueActionPerformed;
-        inputActions.Player.Action.canceled += OnDialogueActionCanceled;
-    }
-    private void OnDisable()
-    {
-        inputActions.Player.Action.performed -= OnDialogueActionPerformed;
-        inputActions.Player.Action.canceled -= OnDialogueActionCanceled;
-        inputActions.Player.Disable();
-    }
-    private void OnDialogueActionPerformed(InputAction.CallbackContext context)
-    {
-        continueInput = context.ReadValue<float>();
-    }
-    private void OnDialogueActionCanceled(InputAction.CallbackContext context)
-    {
-        continueInput = 0f;
-    }
     public void SetText(List<string> content)
     {
         dialogues = content;
@@ -49,7 +28,6 @@ public class RegularDialogueBubble : DialogueBubble
     }
     void Start()
     {
-        continueInput = 0;
         isReady = false;
     }
     private System.Collections.IEnumerator Typewriter()
@@ -60,7 +38,7 @@ public class RegularDialogueBubble : DialogueBubble
         }
         foreach(string phrase in dialogues)
         {
-            while (continueInput == 0 || !isReady)
+            while (InputActions.Instance.buttonInput == 0 || !isReady)
             {
                 yield return null;
             }

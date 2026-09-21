@@ -1,8 +1,6 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 using TMPro;
 using System.Collections.Generic;
-using UnityEngine.Rendering;
 public class InventoryUI : MonoBehaviour
 {
     [SerializeField] OptionsBubble optionsBubble;
@@ -10,19 +8,14 @@ public class InventoryUI : MonoBehaviour
     private Slot selectedSlot;
     private Slot swappingSlot;
     private TextMeshProUGUI bubbleCountText;
-    private PlayerInputActions inputActions;
     [SerializeField] PlayerController playerController;
     [SerializeField] RectTransform bubbleCountRectTransform;
     private RectTransform rectTransform;
     private Vector2 shownPosition;
     private Vector2 hiddenPosition;
-    public Vector2 moveInventoryInput;
-    private float inventoryInput;
-    public float inventorySelectInput;
     private bool isSwapping;
     private int swappingRow;
     private int swappingCol;
-    private bool isOpen;
     private bool isAnimated;
     public bool isCooling;
     public bool isSelecting;
@@ -32,58 +25,12 @@ public class InventoryUI : MonoBehaviour
     private Coroutine currentAnimation;
     private Coroutine currentCooldown;
     
-    private void OnEnable()
-    {
-        inputActions.Player.Enable();
-        inputActions.Player.OpenInventory.performed += OnInventoryPerformed;
-        inputActions.Player.OpenInventory.canceled += OnInventoryCanceled;
-        inputActions.Player.MoveInventory.performed += OnMoveInventoryPerformed;
-        inputActions.Player.MoveInventory.canceled += OnMoveInventoryCanceled;
-        inputActions.Player.Action.performed += OnInventoryActionPerformed;
-        inputActions.Player.Action.canceled += OnInventoryActionCanceled;
-    }
-    private void OnDisable()
-    {
-        inputActions.Player.OpenInventory.performed -= OnInventoryPerformed;
-        inputActions.Player.OpenInventory.canceled -= OnInventoryCanceled;
-        inputActions.Player.MoveInventory.performed -= OnMoveInventoryPerformed;
-        inputActions.Player.MoveInventory.canceled -= OnMoveInventoryCanceled;
-        inputActions.Player.Action.performed -= OnInventoryActionPerformed;
-        inputActions.Player.Action.canceled -= OnInventoryActionCanceled;
-        inputActions.Player.Disable();
-    }
-    private void OnInventoryActionPerformed(InputAction.CallbackContext context)
-    {
-        inventorySelectInput = context.ReadValue<float>();
-    }
-    private void OnInventoryActionCanceled(InputAction.CallbackContext context)
-    {
-        inventorySelectInput = 0f;
-    }
-    private void OnMoveInventoryPerformed(InputAction.CallbackContext context)
-    {
-        if (isOpen) moveInventoryInput = context.ReadValue<Vector2>();
-    }
-    private void OnMoveInventoryCanceled(InputAction.CallbackContext context)
-    {
-        moveInventoryInput = new Vector2(0,0);
-    }
-    private void OnInventoryPerformed(InputAction.CallbackContext context)
-    {
-        inventoryInput = context.ReadValue<float>();
-    }
-    private void OnInventoryCanceled(InputAction.CallbackContext context)
-    {
-        inventoryInput = 0f;
-    }
     void Awake()
     {
         slots = new Slot[10];
         rectTransform = GetComponent<RectTransform>();
         bubbleCountText = GetComponentInChildren<TextMeshProUGUI>();
-        inputActions = new PlayerInputActions();
         isAnimated = false;
-        isOpen = false;
         isSelecting = false;
         isSwapping = false;
         hiddenPosition = new Vector2(0f, -1500f);
@@ -93,6 +40,8 @@ public class InventoryUI : MonoBehaviour
     }
     void Start()
     {
+        
+        InputActions.Instance.isOpen = false;
         rectTransform.anchoredPosition = hiddenPosition;
         selectingCol = 0;
         selectingRow = 0;
@@ -112,13 +61,13 @@ public class InventoryUI : MonoBehaviour
     }
     void Update()
     {
-        if (isOpen && isSelecting && isSwapping && !isCooling)
+        if (InputActions.Instance.isOpen && isSelecting && isSwapping && !isCooling)
         {
-            if(moveInventoryInput.y != 0 || moveInventoryInput.x != 0)
+            if(InputActions.Instance.moveInventoryInput.y != 0 || InputActions.Instance.moveInventoryInput.x != 0)
             {
                 HoverSlot();
             }
-            if (inventorySelectInput != 0)
+            if (InputActions.Instance.inventorySelectInput != 0)
             {
                 if (swappingSlot != null)
                 {
@@ -147,17 +96,17 @@ public class InventoryUI : MonoBehaviour
                 currentCooldown = StartCoroutine(Cooldown());
             }
         }
-        if (inventoryInput != 0 && !isAnimated && !isSelecting && !isSelling)
+        if (InputActions.Instance.inventoryInput != 0 && !isAnimated && !isSelecting && !isSelling)
         {
             OpenInventory();
         }
-        if (!isCooling && isOpen && !isSelecting)
+        if (!isCooling && InputActions.Instance.isOpen && !isSelecting)
         {
-            if(moveInventoryInput.y != 0 || moveInventoryInput.x != 0)
+            if(InputActions.Instance.moveInventoryInput.y != 0 || InputActions.Instance.moveInventoryInput.x != 0)
             {
                 HoverSlot();
             }
-            if (inventorySelectInput != 0)
+            if (InputActions.Instance.inventorySelectInput != 0)
             {
                 if (isSelling)
                 {
@@ -215,9 +164,9 @@ public class InventoryUI : MonoBehaviour
                 swappingSlot.QuitHover();
             }
             isCooling = true;
-            swappingCol += (int)moveInventoryInput.x;
+            swappingCol += (int)InputActions.Instance.moveInventoryInput.x;
             swappingCol = (swappingCol < 0) ? 4 : swappingCol % 5;
-            swappingRow += (int)moveInventoryInput.y;
+            swappingRow += (int)InputActions.Instance.moveInventoryInput.y;
             swappingRow = (swappingRow < 0) ? 1 : swappingRow % 2;
             swappingSlot = slots[(5 * swappingRow) + swappingCol];
             swappingSlot.Hover();
@@ -229,9 +178,9 @@ public class InventoryUI : MonoBehaviour
                 selectedSlot.QuitHover();
             }
             isCooling = true;
-            selectingCol += (int)moveInventoryInput.x;
+            selectingCol += (int)InputActions.Instance.moveInventoryInput.x;
             selectingCol = (selectingCol < 0) ? 4 : selectingCol % 5;
-            selectingRow += (int)moveInventoryInput.y;
+            selectingRow += (int)InputActions.Instance.moveInventoryInput.y;
             selectingRow = (selectingRow < 0) ? 1 : selectingRow % 2;
             selectedSlot = slots[(5 * selectingRow) + selectingCol];
             selectedSlot.Hover();
@@ -257,15 +206,15 @@ public class InventoryUI : MonoBehaviour
         }
         isAnimated = true;
         bubbleCountText.text = PlayerStats.Instance.bubbles.ToString();
-        Vector2 target = isOpen ? hiddenPosition : shownPosition;
-        isOpen = !isOpen;
+        Vector2 target = InputActions.Instance.isOpen ? hiddenPosition : shownPosition;
+        InputActions.Instance.isOpen = !InputActions.Instance.isOpen;
         selectedSlot.Hover();
-        playerController.isInteracting = isOpen;
-        if (!isOpen)
+        playerController.isInteracting = InputActions.Instance.isOpen;
+        if (!InputActions.Instance.isOpen)
         {
             if (selectedSlot.itemPrefab != null) selectedSlot.QuitHover();
         }
-        else inventorySelectInput = 0f;
+        else InputActions.Instance.inventorySelectInput = 0f;
         if (currentAnimation != null) StopCoroutine(currentAnimation);
         currentAnimation = StartCoroutine(AnimatePanel(target));
     }

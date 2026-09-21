@@ -18,7 +18,6 @@ public class Slot : MonoBehaviour
     public GameObject itemPrefab;
     public ItemData itemData;
     
-    private bool isAnimated;
     public bool isAnimatingGlow;
     private Image image;
     private Coroutine currentAnimation;
@@ -123,7 +122,6 @@ public class Slot : MonoBehaviour
                 yield return null;
             }
             iconRectTransform.localScale = Vector3.zero;
-            isAnimated = false;
             Destroy(icon);
             icon = null;
             iconNormalSize = new Vector2(0f,0f);

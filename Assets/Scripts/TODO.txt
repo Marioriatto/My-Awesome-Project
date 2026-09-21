@@ -1,7 +1,1 @@
-hacer singleton del inputActions
-cambiar referencias en:
-regularDialogueBubble
-PlayerController
-PlayerInteractionBox
-InventoryUI
-OptionsBubble
+Migracion a InputActions lista

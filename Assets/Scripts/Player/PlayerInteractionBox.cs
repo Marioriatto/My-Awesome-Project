@@ -12,7 +12,7 @@ public class PlayerInteractionBox : MonoBehaviour
     {
         if (other.CompareTag("NPC"))
         {
-            if (parentScript.buttonInput != 0) 
+            if (InputActions.Instance.buttonInput != 0) 
             {
                 parentScript.isInteracting = true;
                 Debug.Log("npc TODO");
@@ -21,7 +21,7 @@ public class PlayerInteractionBox : MonoBehaviour
         }
         else if (other.CompareTag("House"))
         {
-            if (parentScript.buttonInput != 0)
+            if (InputActions.Instance.buttonInput != 0)
             {
                 parentScript.isInteracting = true;
                 Debug.Log("casa TODO");
@@ -30,7 +30,7 @@ public class PlayerInteractionBox : MonoBehaviour
         }
         else if (other.CompareTag("Dealer"))
         {
-            if (parentScript.pickInput != 0)
+            if (InputActions.Instance.pickInput != 0)
             {
                 //NPC dealer = other.gameObject.GetComponent<NPC>();
                 //dealer.Dialogue();

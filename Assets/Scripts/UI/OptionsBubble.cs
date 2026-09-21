@@ -49,17 +49,17 @@ public class OptionsBubble : DialogueBubble
     {
         if (!isCooling && !isAnimated && inventoryScript.isSelecting)
         {
-            if (inventoryScript.moveInventoryInput.y != 0)
+            if (InputActions.Instance.moveInventoryInput.y != 0)
             {
                 TextHover();
                 isCooling = true;
                 if (currentCooldown != null) StopCoroutine(currentCooldown);
                 currentCooldown = StartCoroutine(Cooldown());
-                selectedIndex -= (int)inventoryScript.moveInventoryInput.y;
+                selectedIndex -= (int)InputActions.Instance.moveInventoryInput.y;
                 selectedIndex = (selectedIndex < 0) ? options.Count - 1 : selectedIndex % options.Count;
                 TextHover();
             }
-            if (inventoryScript.inventorySelectInput != 0)
+            if (InputActions.Instance.inventorySelectInput != 0)
             {
                 options[selectedIndex].onOptionSelected?.Invoke();
                 PopOut();

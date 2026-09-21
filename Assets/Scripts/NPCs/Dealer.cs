@@ -10,8 +10,9 @@ public class Dealer : NPC
     {
         base.Awake();
     }
-    void Start()
+    protected override void Start()
     {
+        base.Start();
         isDialogue = false;
     }
     public override void Dialogue()
