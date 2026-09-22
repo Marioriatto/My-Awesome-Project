@@ -4,9 +4,9 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 public class PlayerController : MonoBehaviour
 {
-    private bool isMoving;
     public bool isInteracting;
     private Coroutine currentCooldown;
+    private Coroutine currentAnimation;
     [SerializeField] InventoryUI inventoryScript;
     private void OnTriggerStay(Collider other)
     {
@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour
     private System.Collections.IEnumerator Cooldown(bool value)
     {
         float elaps = 0f;
-        while (elaps < 0.3f)
+        while (elaps < 0.4f)
         {
             elaps += Time.deltaTime;
             yield return null;
@@ -62,6 +62,30 @@ public class PlayerController : MonoBehaviour
                     targetRotation,
                     1080f * Time.deltaTime);   
             }
+        }
+    }
+    public virtual void RotateTowardsTarget(Vector3 target)
+    {
+        if(currentAnimation != null) StopCoroutine(currentAnimation);
+        currentAnimation = StartCoroutine(Rotate(target));
+    }
+    private System.Collections.IEnumerator Rotate(Vector3 target)
+    {
+        float deltay = target.z - transform.position.z;
+        float deltax = target.x - transform.position.x;
+        Quaternion targetRotation = Quaternion.Euler(
+            new Vector3(0,
+            Mathf.Atan2(deltay * -1, deltax) * Mathf.Rad2Deg,
+            0));
+        float elaps = 0f;
+        while (transform.rotation != targetRotation)
+        {
+            elaps += Time.deltaTime;
+            transform.rotation = Quaternion.RotateTowards(
+                transform.rotation,
+                targetRotation,
+                360f * Time.deltaTime);  
+            yield return null;
         }
     }
 }

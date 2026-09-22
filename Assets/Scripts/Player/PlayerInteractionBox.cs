@@ -19,9 +19,10 @@ public class PlayerInteractionBox : MonoBehaviour
                 parentScript.isInteracting = true;
                 NPC npc = other.gameObject.GetComponent<NPC>();
                 if (npc.dialogues == null) Debug.Log("no dialogues found in npc");
-                else 
+                else
                 {
-                    npc.RotateTowardsPlayer();
+                    parentScript.RotateTowardsTarget(npc.transform.position);
+                    npc.RotateTowards(PlayerStats.Instance.transform.position);
                     dialogueBubble.SetText(npc.dialogues);
                 }
             }
