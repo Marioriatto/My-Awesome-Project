@@ -12,6 +12,7 @@ public class DialogueBubble : MonoBehaviour
     }
     protected virtual void PopIn()
     {
+        Show();
         isAnimated = true;
         if (currentAnimation != null) StopCoroutine(currentAnimation);
         currentAnimation = StartCoroutine(AnimateScale(Vector3.zero, Vector3.one));
@@ -21,9 +22,8 @@ public class DialogueBubble : MonoBehaviour
         isAnimated = true;
         if (currentAnimation != null) StopCoroutine(currentAnimation);
         currentAnimation = StartCoroutine(AnimateScale(Vector3.one, Vector3.zero));
-        
     }
-    void Start()
+    protected virtual void Start()
     {
         Hide();
     }

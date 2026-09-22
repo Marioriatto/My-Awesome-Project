@@ -1,16 +1,22 @@
+using System.Collections.Generic;
+using Microsoft.Extensions.Logging.Abstractions;
+using Unity.Collections.Tests.CoreCLR.TestJobs;
 using UnityEngine;
 
 public class NPC : MonoBehaviour
 {
     private static readonly string[] names =
     {
-        "Marlon", "Charlie", "George", "Ian"
+        "Marlon", "Charlie", "Jorge", "Jefry"
     };
-    protected bool isDialogue;
-    protected bool isMoving;
     public static int npcID;
     private string _npcName;
     public string npcName { get{ return _npcName;} set{_npcName = value;}}
+    public List<string> dialogues;
+    private Vector2 target;
+    protected bool isMoving;
+    protected bool isRotating;
+    protected Coroutine currentAnimation;
     public virtual void Awake()
     {
         npcName = names[Random.Range(0,names.Length)];
@@ -19,34 +25,46 @@ public class NPC : MonoBehaviour
     {
         isMoving = false;
     }
-    public virtual void Dialogue()
-    {
-        isDialogue = true;
-    }
     protected virtual void Movement()
     {
-        /*
-            define random target
-                rotation and distance (polar coordinates)
-            define random idle time
-        */
+        if(currentAnimation != null) StopCoroutine(currentAnimation);
+        currentAnimation = StartCoroutine(StayIdle());
     }
-    protected virtual Vector3 SetTarget()
+    public virtual void RotateTowardsPlayer()
     {
-        return new Vector3(Random.Range(-10f,10f),0,Random.Range(-10f,10f));
-    }   
-    void Update()
+        if(currentAnimation != null) StopCoroutine(currentAnimation);
+        currentAnimation = StartCoroutine(Rotate());
+    }
+    private System.Collections.IEnumerator Rotate()
     {
-        if (isDialogue)
+        float deltay = PlayerStats.Instance.transform.position.z - transform.position.z;
+        float deltax = PlayerStats.Instance.transform.position.x - transform.position.x;
+        Quaternion targetRotation = Quaternion.Euler(
+            new Vector3(0,
+            Mathf.Atan2(deltay, deltax) * Mathf.Rad2Deg,
+            0));
+        float elaps = 0f;
+        // arreglar rotation
+        while (transform.rotation != targetRotation)
         {
-            //prob this will be done by dialogue UI
-            //call select func
-            //if sell or buy
+            elaps += Time.deltaTime;
+            transform.rotation = Quaternion.RotateTowards(
+                transform.rotation,
+                targetRotation,
+                360f * Time.deltaTime);  
+            yield return null;
         }
-        if (!isMoving)
+        isRotating = false;
+    }    
+    private System.Collections.IEnumerator StayIdle()
+    {
+        isMoving = false;
+        float elaps = 0f;
+        while (elaps < Random.Range(1,5))
         {
-            //Movement  
-            Movement();    
-        }  
+            elaps += Time.deltaTime;
+            yield return null;
+        }
+        isMoving = true;
     }
 }

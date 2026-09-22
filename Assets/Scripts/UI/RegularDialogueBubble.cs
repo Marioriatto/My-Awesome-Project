@@ -6,28 +6,35 @@ using UnityEngine.UI;
 
 public class RegularDialogueBubble : DialogueBubble
 {
-    [SerializeField] protected TextMeshProUGUI textMeshPro; // ready
-    [SerializeField] OptionsBubble optionsBubble; // ready
-    // definir forma de invocar a options bubble desde la lista de dialogos
-    private PlayerInputActions inputActions; // cambiar por referencia al singleton
+    [SerializeField] protected TextMeshProUGUI textMeshPro;
+    [SerializeField] OptionsBubble optionsBubble;
+    [SerializeField] PlayerInteractionBox interactionBox;
+    [SerializeField] CameraController cameraController;
     private List<string> dialogues;
     private bool isReady;
     private Coroutine currentCooldown;
+    private Coroutine currentTypewriter;
 
     protected override void Awake()
     {
         base.Awake();
-        textMeshPro = GetComponent<TextMeshProUGUI>();
         currentCooldown = null;
+        currentTypewriter = null;
+        if (interactionBox == null) Debug.Log("no interaction box reference from dialogueBubble");
     }
     public void SetText(List<string> content)
     {
+        cameraController.Zoom();
         dialogues = content;
+        textMeshPro = GetComponentInChildren<TextMeshProUGUI>();
+        textMeshPro.text = "";
         PopIn();
-        Typewriter();
+        if (currentTypewriter != null) StopCoroutine(currentTypewriter);
+        currentTypewriter = StartCoroutine(Typewriter());
     }
-    void Start()
+    protected override void Start()
     {
+        base.Start();
         isReady = false;
     }
     private System.Collections.IEnumerator Typewriter()
@@ -36,9 +43,10 @@ public class RegularDialogueBubble : DialogueBubble
         {
             yield return null;
         }
+        isReady = true;
         foreach(string phrase in dialogues)
         {
-            while (InputActions.Instance.buttonInput == 0 || !isReady)
+            while ((InputActions.Instance.buttonInput == 0) || !isReady)
             {
                 yield return null;
             }
@@ -46,7 +54,18 @@ public class RegularDialogueBubble : DialogueBubble
             if (currentCooldown != null) StopCoroutine(currentCooldown);
             currentCooldown = StartCoroutine(TypewriterAnimation(phrase));
         }
+        while (InputActions.Instance.buttonInput == 0 || !isReady)
+        {
+            yield return null;
+        }
+        Debug.Log("acabe");
         PopOut();
+    }
+    public override void Hide()
+    {
+        interactionBox.parentScript.SetInteracting(false);
+        base.Hide();
+        cameraController.QuitZoom();
     }
     private System.Collections.IEnumerator TypewriterAnimation(string phrase)
     {
@@ -62,5 +81,6 @@ public class RegularDialogueBubble : DialogueBubble
             }
         }
         isReady = true;
+        InputActions.Instance.buttonInput = 0;
     }
 }

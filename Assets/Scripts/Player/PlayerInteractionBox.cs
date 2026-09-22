@@ -3,20 +3,27 @@ using UnityEngine;
 
 public class PlayerInteractionBox : MonoBehaviour
 {
-    [SerializeField] PlayerController parentScript;
+    [SerializeField] public PlayerController parentScript;
+    [SerializeField] RegularDialogueBubble dialogueBubble;
     void Start()
     {
         if (parentScript == null) Debug.LogWarning("Interactionbox does not have access to playercontroller");
+        if (dialogueBubble == null) Debug.LogWarning("Interactionbox does not have access to dialoguebubble");
     }
     private void OnTriggerStay(Collider other)
     {
         if (other.CompareTag("NPC"))
         {
-            if (InputActions.Instance.buttonInput != 0) 
+            if (InputActions.Instance.buttonInput != 0 && parentScript.isInteracting == false) 
             {
                 parentScript.isInteracting = true;
-                Debug.Log("npc TODO");
-                parentScript.isInteracting = false;
+                NPC npc = other.gameObject.GetComponent<NPC>();
+                if (npc.dialogues == null) Debug.Log("no dialogues found in npc");
+                else 
+                {
+                    npc.RotateTowardsPlayer();
+                    dialogueBubble.SetText(npc.dialogues);
+                }
             }
         }
         else if (other.CompareTag("House"))
@@ -36,9 +43,5 @@ public class PlayerInteractionBox : MonoBehaviour
                 //dealer.Dialogue();
             }
         }
-    }
-    void Update()
-    {
-        
     }
 }

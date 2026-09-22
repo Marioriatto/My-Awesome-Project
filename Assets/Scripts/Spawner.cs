@@ -72,13 +72,14 @@ public class Spawner : MonoBehaviour
                 if (deltax == 149) break;
             }
             instance.transform.position = new Vector3(x, 0f, z);
+            SetCell(x+75,z+75,true);
         }
     }
     void SpawnNPCs()
     {
         for (int i = 0; i < 4; i++)
         {
-            GameObject npc = Instantiate(NPC);
+            GameObject npc;
             int desicion = Random.Range(0,2), x = Random.Range(-25,25), z = Random.Range(-25,25);
             if (desicion == 0) npc = Instantiate(NPC);
             else {npc = Instantiate(Dealer);}
@@ -91,6 +92,9 @@ public class Spawner : MonoBehaviour
                 if (deltax == 149) break;
             }
             npc.transform.position = new Vector3(x, 1f, z);
+            Debug.Log(npc.transform.position);
+            Debug.Log(GetCell(x+75,z+75));
+            SetCell(x+75,z+75,true);
         }
     }
     void SpawnHouses()

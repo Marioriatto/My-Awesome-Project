@@ -6,6 +6,7 @@ public class PlayerController : MonoBehaviour
 {
     private bool isMoving;
     public bool isInteracting;
+    private Coroutine currentCooldown;
     [SerializeField] InventoryUI inventoryScript;
     private void OnTriggerStay(Collider other)
     {
@@ -26,8 +27,24 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+    public void SetInteracting(bool value)
+    {
+        if (currentCooldown != null) StopCoroutine(currentCooldown);
+        currentCooldown = StartCoroutine(Cooldown(value));
+    }
+    private System.Collections.IEnumerator Cooldown(bool value)
+    {
+        float elaps = 0f;
+        while (elaps < 0.3f)
+        {
+            elaps += Time.deltaTime;
+            yield return null;
+        }
+        isInteracting = value;
+    }
     void Start()
     {
+        currentCooldown = null;
         if (inventoryScript == null) Debug.LogWarning("PlayerController Script does not have a reference to Inventory script");
     }
     void Update()
