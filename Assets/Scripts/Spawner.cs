@@ -92,8 +92,6 @@ public class Spawner : MonoBehaviour
                 if (deltax == 149) break;
             }
             npc.transform.position = new Vector3(x, 1f, z);
-            Debug.Log(npc.transform.position);
-            Debug.Log(GetCell(x+75,z+75));
             SetCell(x+75,z+75,true);
         }
     }
