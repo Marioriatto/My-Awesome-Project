@@ -1,37 +1,32 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging.Abstractions;
 using Unity.Collections.Tests.CoreCLR.TestJobs;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class NPC : MonoBehaviour
 {
-    private static readonly string[] names =
-    {
-        "Marlon", "Charlie", "Jorge", "Jefry"
-    };
-    public static int npcID;
-    private string _npcName;
-    public string npcName { get{ return _npcName;} set{_npcName = value;}}
-    public List<string> dialogues;
-    protected bool isAnimating;
-    protected bool isRotating;
-    protected Coroutine currentAnimation;
-    protected Coroutine currentRotation;
+    public string npcName;
+    public List<Dialogues> dialogues;
+    protected bool isAnimating, isRotating;
+    public bool stayStill;
+    protected Coroutine currentAnimation, currentRotation;
     public virtual void Awake()
-    {
-        npcName = names[Random.Range(0,names.Length)];
-    }
+    {}
     protected virtual void Start()
     {
+        stayStill = false;
         isAnimating = false;
         isRotating = false;
+        NPCDialoguesList npcDialoguesList = JsonLoader.Instance.npc[Random.Range(0,JsonLoader.Instance.npc.Count)];
+        npcName = npcDialoguesList.name;
+        dialogues = npcDialoguesList.dialogues;
     }
     protected void Update()
     {
-        /*
-        if (!isAnimating)
+        if (!isAnimating && !stayStill)
         {
-            switch (Random.Range(0,3))
+            switch (Random.Range(0,2))
             {
                 case 0:
                     if(currentAnimation != null) StopCoroutine(currentAnimation);
@@ -39,38 +34,36 @@ public class NPC : MonoBehaviour
                 break;
                 case 1:
                     if (currentAnimation != null) StopCoroutine(currentAnimation);
-                    currentAnimation = StartCoroutine(MoveTowards(new Vector3(Random.Range(0.0f,1.0f),0,Random.Range(0.0f,1.0f))));
+                    currentAnimation = StartCoroutine(Move(new Vector3(Random.Range(-7.0f,7.0f),0,Random.Range(-7.0f,7.0f))));
                 break;
                 default:
                 break;
             }
-        }*/
+        }
     }
     public virtual void RotateTowards(Vector3 target)
     {
+        StopAllCoroutines();
         if(currentRotation != null) StopCoroutine(currentRotation);
         currentRotation = StartCoroutine(Rotate(target));
     }
-    private System.Collections.IEnumerator MoveTowards(Vector3 target)
+    private System.Collections.IEnumerator Move(Vector3 target)
     {
         isAnimating = true;
-        float elapsed = 0f;
-        float timeLimit =  Random.Range(-1.0f,1.0f);
-
+        target += transform.position;
         if(currentRotation != null) StopCoroutine(currentRotation);
         currentRotation = StartCoroutine(Rotate(target));
         while (isRotating)
         {
             yield return null;
         }
-        
-        while (elapsed < timeLimit)
+        isAnimating = true;
+        while (Vector3.Distance(transform.position, target) > 0.01f)
         {
-            elapsed += Time.deltaTime;
-            float tiempo = elapsed / timeLimit;
-            transform.position = Vector3.Lerp(transform.position, transform.position + target, tiempo);
+            transform.position = Vector3.MoveTowards(transform.position, target, 2f * Time.deltaTime);
             yield return null;
         }
+        transform.position = target;
         isAnimating = false;
     }
     private System.Collections.IEnumerator Rotate(Vector3 target)
@@ -96,13 +89,13 @@ public class NPC : MonoBehaviour
     }
     private System.Collections.IEnumerator StayIdle()
     {
-        isAnimating = false;
+        isAnimating = true;
         float elaps = 0f;
         while (elaps < Random.Range(1.0f,5.0f))
         {
             elaps += Time.deltaTime;
             yield return null;
         }
-        isAnimating = true;
+        isAnimating = false;
     }
 }

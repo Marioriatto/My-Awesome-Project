@@ -3,8 +3,7 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     [SerializeField] PlayerController player;
-    private bool isZoomed;
-    private bool isZooming;
+    private bool isZoomed, isZooming;
     private Coroutine currentZoom;
     void Start()
     {

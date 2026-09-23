@@ -5,8 +5,7 @@ using System.Collections.Generic;
 public class ItemData : ScriptableObject
 {
     public string itemName;
-    public GameObject icon;
-    public GameObject prefab;
+    public GameObject icon, prefab;
     public List<string> options;
     public int price;
     public bool isSaleable;

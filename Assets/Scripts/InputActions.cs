@@ -6,17 +6,9 @@ public class InputActions : MonoBehaviour
 {
     public static InputActions Instance { get; private set;}
     private PlayerInputActions actions;
-    public Vector2 moveInventoryInput;
-    public Vector2 moveInput;
-    public Vector2 rotateInput;
-    public float inventorySelectInput;
-    public float inventoryInput;
-    public float buttonInput;
-
-    public float pickInput;
-    public float actionInput;
-    public bool isMoving;
-    public bool isOpen;
+    public Vector2 moveInventoryInput, moveInput, rotateInput;
+    public float inventorySelectInput, inventoryInput, buttonInput, pickInput, actionInput;
+    public bool isMoving, isOpen;
     void Awake()
     {
         if (Instance != null && Instance != this)

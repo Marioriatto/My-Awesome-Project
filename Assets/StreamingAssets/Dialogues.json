@@ -1,0 +1,36 @@
+{
+  "types": [
+    {
+      "typeName": "NPC",
+      "npcList": [
+        {
+          "name": "Marlon",
+          "dialogues": [
+            { "lines": ["Soy Mamarlon, bienvenido a resis.", "En el pasillo voy a rancharte.", "A jugar LOL voy a invitarte."] },
+            { "lines": ["text1", "text1", "text1"] }
+          ]
+        },
+        {
+          "name": "Charlie",
+          "dialogues": [
+            { "lines": ["Dialogo Charlie 1", "Dialogo Charlie 1.1", "Dialogo Charlie 1.2"] },
+            { "lines": ["Dialogo Charlie 2", "Dialogo Charlie 2.1", "Dialogo Charlie 2.2"] },
+            { "lines": ["Dialogo Charlie 3", "Dialogo Charlie 3.1", "Dialogo Charlie 3.2"] }
+          ]
+        },
+        {
+          "name": "Jose",
+          "dialogues": [
+            { "lines": ["Jorge, Il aseo per favore", "Ethan, la cuota per favore", "Adrian, la droga per favore."] },
+            { "lines": ["Dialogo Jose 2", "Dialogo Jose 2.1", "Dialogo Jose 2.2"] },
+            { "lines": ["Dialogo Jose 3", "Dialogo Jose 3.1", "Dialogo Jose 3.2"] }
+          ]
+        }
+      ]
+    },
+    {
+      "typeName": "Dealer",
+      "npcList": []
+    }
+  ]
+}

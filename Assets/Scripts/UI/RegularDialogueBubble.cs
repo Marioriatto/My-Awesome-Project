@@ -7,13 +7,14 @@ using UnityEngine.UI;
 public class RegularDialogueBubble : DialogueBubble
 {
     [SerializeField] protected TextMeshProUGUI textMeshPro;
+    [SerializeField] protected TextMeshProUGUI nameTextMeshPro;
     [SerializeField] OptionsBubble optionsBubble;
     [SerializeField] PlayerInteractionBox interactionBox;
     [SerializeField] CameraController cameraController;
     private List<string> dialogues;
-    private bool isReady;
-    private Coroutine currentCooldown;
-    private Coroutine currentTypewriter;
+    private bool isReady, isFirstLine;
+    private NPC npc;
+    private Coroutine currentCooldown, currentTypewriter;
 
     protected override void Awake()
     {
@@ -22,12 +23,16 @@ public class RegularDialogueBubble : DialogueBubble
         currentTypewriter = null;
         if (interactionBox == null) Debug.Log("no interaction box reference from dialogueBubble");
     }
-    public void SetText(List<string> content)
+    public void SetText(NPC npc)
     {
+        this.npc = npc;
         cameraController.Zoom();
-        dialogues = content;
-        textMeshPro = GetComponentInChildren<TextMeshProUGUI>();
+        dialogues = npc.dialogues[Random.Range(0,npc.dialogues.Count)].lines;
+        TextMeshProUGUI[] texts = GetComponentsInChildren<TextMeshProUGUI>();
+        textMeshPro = texts[0];
         textMeshPro.text = "";
+        nameTextMeshPro = texts[1];
+        nameTextMeshPro.text = npc.npcName;
         PopIn();
         if (currentTypewriter != null) StopCoroutine(currentTypewriter);
         currentTypewriter = StartCoroutine(Typewriter());
@@ -35,6 +40,7 @@ public class RegularDialogueBubble : DialogueBubble
     protected override void Start()
     {
         base.Start();
+        isFirstLine = false;
         isReady = false;
     }
     private System.Collections.IEnumerator Typewriter()
@@ -44,12 +50,14 @@ public class RegularDialogueBubble : DialogueBubble
             yield return null;
         }
         isReady = true;
+        isFirstLine = true;
         foreach(string phrase in dialogues)
         {
-            while ((InputActions.Instance.buttonInput == 0) || !isReady)
+            while ((!isFirstLine && InputActions.Instance.buttonInput == 0) || !isReady)
             {
                 yield return null;
             }
+            isFirstLine = false;
             isReady = false;
             if (currentCooldown != null) StopCoroutine(currentCooldown);
             currentCooldown = StartCoroutine(TypewriterAnimation(phrase));
@@ -58,14 +66,15 @@ public class RegularDialogueBubble : DialogueBubble
         {
             yield return null;
         }
-        Debug.Log("acabe");
         PopOut();
+        npc.stayStill = false;
     }
     public override void Hide()
     {
-        interactionBox.parentScript.SetInteracting(false);
+        interactionBox.interactingSubject = null;
         base.Hide();
         cameraController.QuitZoom();
+        interactionBox.parentScript.SetInteracting(false);
     }
     private System.Collections.IEnumerator TypewriterAnimation(string phrase)
     {
@@ -74,7 +83,7 @@ public class RegularDialogueBubble : DialogueBubble
         {
             textMeshPro.text += letter;
             float elapsed = 0f;
-            while (elapsed < 0.05f)
+            while (elapsed < 0.035f)
             {
                 elapsed += Time.deltaTime;
                 yield return null;

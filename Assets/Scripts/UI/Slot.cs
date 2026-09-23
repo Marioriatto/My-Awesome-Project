@@ -3,15 +3,12 @@ using UnityEngine.UI;
 
 public class Slot : MonoBehaviour
 {
-    //item photo
     private int _id;
     public int id { get{return _id;} set {_id = value;}}
     private GameObject _playerController;
     public GameObject playerController {get {return _playerController;} set {_playerController = value;}}
-    private RectTransform rectTransform;
-    private RectTransform iconRectTransform;
-    private Vector2 normalSize;
-    private Vector2 iconNormalSize;
+    private RectTransform rectTransform, iconRectTransform;
+    private Vector2 normalSize, iconNormalSize;
     private float hoverScaling;
     private GameObject _icon;
     public GameObject icon {get{return _icon;} set { _icon = value;}}

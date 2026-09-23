@@ -5,25 +5,17 @@ public class InventoryUI : MonoBehaviour
 {
     [SerializeField] OptionsBubble optionsBubble;
     public Slot[] slots;
-    private Slot selectedSlot;
-    private Slot swappingSlot;
+    private Slot selectedSlot, swappingSlot;
     private TextMeshProUGUI bubbleCountText;
     [SerializeField] PlayerController playerController;
     [SerializeField] RectTransform bubbleCountRectTransform;
     private RectTransform rectTransform;
-    private Vector2 shownPosition;
-    private Vector2 hiddenPosition;
-    private bool isSwapping;
-    private int swappingRow;
-    private int swappingCol;
-    private bool isAnimated;
-    public bool isCooling;
-    public bool isSelecting;
-    public bool isSelling;
-    public int selectingRow;
-    public int selectingCol;
-    private Coroutine currentAnimation;
-    private Coroutine currentCooldown;
+    private Vector2 shownPosition, hiddenPosition;
+    private bool isSwapping, isAnimated;
+    private int swappingRow, swappingCol;
+    public bool isCooling, isSelecting, isSelling;
+    public int selectingRow, selectingCol;
+    private Coroutine currentAnimation, currentCooldown;
     
     void Awake()
     {

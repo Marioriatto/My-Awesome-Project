@@ -90,8 +90,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPC
   dialogues:
-  - Future's now old man.
-  - This project is awesome. I love frutiger aero.
+  - Hoy de nuevo te voy a ver, estoy bien bellaco
+  - "Qu\xE9date en pantis, mod\xE9lame en tacos"
+  - "En lo que yo enrolo y desenmo\xF1o el saco"
+  - "Me quito el pantal\xF3n, por el b\xF3xer lo saco"
+  - Tengo un par de retros, me visto bien caco
+  - "Te gusta en la cama c\xF3mo te maltrato"
+  - Quieres que te lo meta a cada rato
+  - "Cuando est\xE1 sola jugamos al rat\xF3n y al gato"
+  stayStill: 0
 --- !u!23 &4892559634308832659
 MeshRenderer:
   m_ObjectHideFlags: 0

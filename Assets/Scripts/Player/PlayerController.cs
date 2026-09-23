@@ -5,8 +5,7 @@ using UnityEngine.UI;
 public class PlayerController : MonoBehaviour
 {
     public bool isInteracting;
-    private Coroutine currentCooldown;
-    private Coroutine currentAnimation;
+    private Coroutine currentCooldown, currentAnimation;
     [SerializeField] InventoryUI inventoryScript;
     private void OnTriggerStay(Collider other)
     {
@@ -35,7 +34,7 @@ public class PlayerController : MonoBehaviour
     private System.Collections.IEnumerator Cooldown(bool value)
     {
         float elaps = 0f;
-        while (elaps < 0.4f)
+        while (elaps < 0.5f)
         {
             elaps += Time.deltaTime;
             yield return null;
@@ -66,7 +65,7 @@ public class PlayerController : MonoBehaviour
     }
     public virtual void RotateTowardsTarget(Vector3 target)
     {
-        if(currentAnimation != null) StopCoroutine(currentAnimation);
+        if(currentAnimation != null) return;
         currentAnimation = StartCoroutine(Rotate(target));
     }
     private System.Collections.IEnumerator Rotate(Vector3 target)
