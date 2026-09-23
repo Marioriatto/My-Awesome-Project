@@ -8,7 +8,7 @@ public class InputActions : MonoBehaviour
     private PlayerInputActions actions;
     public Vector2 moveInventoryInput, moveInput, rotateInput;
     public float inventorySelectInput, inventoryInput, buttonInput, pickInput, actionInput;
-    public bool isMoving, isOpen;
+    public bool isMoving, isOpen, isRegularDialogue;
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -100,7 +100,7 @@ public class InputActions : MonoBehaviour
     }
     private void OnMoveInventoryPerformed(InputAction.CallbackContext context)
     {
-        if (isOpen) moveInventoryInput = context.ReadValue<Vector2>();
+        if (isOpen || isRegularDialogue) moveInventoryInput = context.ReadValue<Vector2>();
     }
     private void OnMoveInventoryCanceled(InputAction.CallbackContext context)
     {

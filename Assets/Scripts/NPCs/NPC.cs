@@ -7,14 +7,15 @@ using UnityEngine;
 public class NPC : MonoBehaviour
 {
     public string npcName;
+    public List<ItemData> items;
     public List<Dialogues> dialogues;
     protected bool isAnimating, isRotating;
+    public bool isDealer;
     public bool stayStill;
     protected Coroutine currentAnimation, currentRotation;
-    public virtual void Awake()
-    {}
     protected virtual void Start()
     {
+        isDealer = false;
         stayStill = false;
         isAnimating = false;
         isRotating = false;

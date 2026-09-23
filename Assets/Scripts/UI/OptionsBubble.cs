@@ -15,21 +15,28 @@ public class OptionsBubble : DialogueBubble
     [System.NonSerialized] public float bubbleWidth = 300f;
     protected bool isCooling;
     protected Coroutine currentCooldown;
+    protected override void Awake()
+    {
+        base.Awake();
+        isCooling = false;
+        currentCooldown = null;
+        selectedIndex = 0;
+    }
     public void SetupOptions(List<DialogueOption> options, Vector2 newPosition)
     {
         Show();
-        this.options = options;
         selectedIndex = 0;
+        this.options = options;
         Vector2 finalSize = new Vector2(bubbleWidth, spacing * (options.Count + 1));
         rectTransform.sizeDelta = finalSize;
         rectTransform.anchoredPosition = new Vector2(newPosition.x + bubbleWidth ,newPosition.y);
-        // HoverPanel
+
         HPRectTransform = hoverPanel.GetComponent<RectTransform>();
         HPRectTransform.sizeDelta = new Vector2(bubbleWidth, rectTransform.sizeDelta.y / options.Count);
         HPRectTransform.anchoredPosition = new Vector2(0f, spacing * (options.Count / 2));
         textOptionsList = new GameObject[options.Count];
         DisplayOptions();
-    } // no se porque no quieren darte la oportunidad
+    }
     private void DisplayOptions()
     {
         for (int i = 0; i < options.Count; i++) 
@@ -47,7 +54,7 @@ public class OptionsBubble : DialogueBubble
     }
     void Update()
     {
-        if (!isCooling && !isAnimated && inventoryScript.isSelecting)
+        if (!isCooling && !isAnimated && (inventoryScript.isSelecting || InputActions.Instance.isRegularDialogue))
         {
             if (InputActions.Instance.moveInventoryInput.y != 0)
             {

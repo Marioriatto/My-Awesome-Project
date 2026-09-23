@@ -6,8 +6,8 @@
         {
           "name": "Marlon",
           "dialogues": [
-            { "lines": ["Soy Mamarlon, bienvenido a resis.", "En el pasillo voy a rancharte.", "A jugar LOL voy a invitarte."] },
-            { "lines": ["text1", "text1", "text1"] }
+            { "lines": ["dialogo 1", "dialogo2", "dialogo 3"] },
+            { "lines": ["text1", "text2", "text3"] }
           ]
         },
         {
@@ -30,7 +30,17 @@
     },
     {
       "typeName": "Dealer",
-      "npcList": []
+      "npcList": [
+        {
+          "name": "Kevyn",
+          "dialogues": [
+            {"lines": ["Dialogue 1","Dialogue 1.1","Dialogue 1.2"]},
+            {"lines": ["Dialogue 2","Dialoue 2.1","Dialogue 2.2"]},
+            {"lines": ["If you need anything else feel free to ask!"]},
+            {"lines": ["Sell","Buy","Back"]}
+          ]
+        }
+      ]
     }
   ]
 }

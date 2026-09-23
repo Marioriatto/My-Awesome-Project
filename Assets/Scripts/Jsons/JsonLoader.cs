@@ -5,6 +5,7 @@ public class JsonLoader : MonoBehaviour
 {
     public static JsonLoader Instance {get; private set;}
     public List<NPCDialoguesList> npc, dealer;
+    public bool[] npcAvailability, dealerAvailability;
     void LoadDialogues()
     {
         string path = Path.Combine(Application.streamingAssetsPath, "Dialogues.json");
