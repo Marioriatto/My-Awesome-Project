@@ -117,6 +117,8 @@ public class InventoryUI : MonoBehaviour
                     {
                         if (SellSlot())
                         {
+                            if (currentCooldown != null) StopCoroutine(currentCooldown);
+                            currentCooldown = StartCoroutine(Cooldown());
                             OpenInventory();
                         }
                     }

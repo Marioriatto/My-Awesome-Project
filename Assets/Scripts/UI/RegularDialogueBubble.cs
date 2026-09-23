@@ -118,7 +118,6 @@ public class RegularDialogueBubble : DialogueBubble
             if (currentCooldown != null) StopCoroutine(currentCooldown);
             currentCooldown = StartCoroutine(TypewriterAnimation(phrase));
         }
-        Debug.Log("continuo");
         while (InputActions.Instance.buttonInput == 0 || !isReady)
         {
             yield return null;
