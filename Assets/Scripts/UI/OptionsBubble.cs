@@ -1,5 +1,4 @@
 using UnityEngine;
-using System;
 using System.Collections.Generic;
 using TMPro;
 public class OptionsBubble : DialogueBubble
@@ -33,6 +32,7 @@ public class OptionsBubble : DialogueBubble
 
         HPRectTransform = hoverPanel.GetComponent<RectTransform>();
         HPRectTransform.sizeDelta = new Vector2(bubbleWidth, rectTransform.sizeDelta.y / options.Count);
+
         HPRectTransform.anchoredPosition = new Vector2(0f, spacing * (options.Count / 2));
         textOptionsList = new GameObject[options.Count];
         DisplayOptions();
@@ -54,7 +54,7 @@ public class OptionsBubble : DialogueBubble
     }
     void Update()
     {
-        if (!isCooling && !isAnimated && (inventoryScript.isSelecting || InputActions.Instance.isRegularDialogue))
+        if (!isCooling && !isAnimated && (inventoryScript.isSelectingSlotOptions || InputActions.Instance.isRegularDialogue))
         {
             if (InputActions.Instance.moveInventoryInput.y != 0)
             {

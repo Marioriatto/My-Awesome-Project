@@ -151,6 +151,16 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""initialStateCheck"": true,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""CloseGame"",
+                    ""type"": ""Button"",
+                    ""id"": ""b4f3ba45-be8a-4e1d-ab83-72f94267f0cf"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -519,6 +529,28 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""6f6fd8a4-d3f6-42f4-bc2c-baa9958036f5"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CloseGame"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8314864a-2f2b-4b40-b4e5-59a61fa5a203"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CloseGame"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""7dc5dd61-0596-44eb-9407-093722491dd3"",
                     ""path"": ""<Gamepad>/buttonNorth"",
                     ""interactions"": """",
@@ -574,6 +606,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_Pick = m_Player.FindAction("Pick", throwIfNotFound: true);
         m_Player_OpenInventory = m_Player.FindAction("OpenInventory", throwIfNotFound: true);
         m_Player_MoveInventory = m_Player.FindAction("MoveInventory", throwIfNotFound: true);
+        m_Player_CloseGame = m_Player.FindAction("CloseGame", throwIfNotFound: true);
     }
 
     ~@PlayerInputActions()
@@ -660,6 +693,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Pick;
     private readonly InputAction m_Player_OpenInventory;
     private readonly InputAction m_Player_MoveInventory;
+    private readonly InputAction m_Player_CloseGame;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -695,6 +729,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/MoveInventory".
         /// </summary>
         public InputAction @MoveInventory => m_Wrapper.m_Player_MoveInventory;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/CloseGame".
+        /// </summary>
+        public InputAction @CloseGame => m_Wrapper.m_Player_CloseGame;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -739,6 +777,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @MoveInventory.started += instance.OnMoveInventory;
             @MoveInventory.performed += instance.OnMoveInventory;
             @MoveInventory.canceled += instance.OnMoveInventory;
+            @CloseGame.started += instance.OnCloseGame;
+            @CloseGame.performed += instance.OnCloseGame;
+            @CloseGame.canceled += instance.OnCloseGame;
         }
 
         /// <summary>
@@ -768,6 +809,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @MoveInventory.started -= instance.OnMoveInventory;
             @MoveInventory.performed -= instance.OnMoveInventory;
             @MoveInventory.canceled -= instance.OnMoveInventory;
+            @CloseGame.started -= instance.OnCloseGame;
+            @CloseGame.performed -= instance.OnCloseGame;
+            @CloseGame.canceled -= instance.OnCloseGame;
         }
 
         /// <summary>
@@ -850,5 +894,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMoveInventory(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CloseGame" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCloseGame(InputAction.CallbackContext context);
     }
 }

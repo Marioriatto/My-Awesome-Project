@@ -6,9 +6,10 @@ public class InputActions : MonoBehaviour
 {
     public static InputActions Instance { get; private set;}
     private PlayerInputActions actions;
+    private ExitDialogueBubble exit;
     public Vector2 moveInventoryInput, moveInput, rotateInput;
-    public float inventorySelectInput, inventoryInput, buttonInput, pickInput, actionInput;
-    public bool isMoving, isOpen, isRegularDialogue;
+    public float inventorySelectInput, inventoryInput, buttonInput, pickInput, actionInput, closeGameInput;
+    public bool isMoving, isInventoryOpen, isRegularDialogue;
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -37,6 +38,8 @@ public class InputActions : MonoBehaviour
         actions.Player.Action.canceled += OnInventoryActionCanceled;
         actions.Player.MoveInventory.performed += OnMoveInventoryPerformed;
         actions.Player.MoveInventory.canceled += OnMoveInventoryCanceled;
+        actions.Player.CloseGame.performed += OnCloseGamePerformed;
+        actions.Player.CloseGame.canceled += OnCloseGameCanceled;
     }
     private void OnDisable()
     {
@@ -54,8 +57,10 @@ public class InputActions : MonoBehaviour
         actions.Player.MoveInventory.canceled -= OnMoveInventoryCanceled;
         actions.Player.Action.performed -= OnInventoryActionPerformed;
         actions.Player.Action.canceled -= OnInventoryActionCanceled;
+        actions.Player.CloseGame.performed -= OnCloseGamePerformed;
+        actions.Player.CloseGame.canceled -= OnCloseGameCanceled;
         actions.Player.Disable();
-    }
+    }    
     private void OnActionPerformed(InputAction.CallbackContext context)
     {
         buttonInput = context.ReadValue<float>();
@@ -100,7 +105,7 @@ public class InputActions : MonoBehaviour
     }
     private void OnMoveInventoryPerformed(InputAction.CallbackContext context)
     {
-        if (isOpen || isRegularDialogue) moveInventoryInput = context.ReadValue<Vector2>();
+        if (isInventoryOpen || isRegularDialogue) moveInventoryInput = context.ReadValue<Vector2>();
     }
     private void OnMoveInventoryCanceled(InputAction.CallbackContext context)
     {
@@ -113,5 +118,13 @@ public class InputActions : MonoBehaviour
     private void OnInventoryCanceled(InputAction.CallbackContext context)
     {
         inventoryInput = 0f;
+    }
+    private void OnCloseGamePerformed(InputAction.CallbackContext context)
+    {
+        exit.Call();
+    }
+    private void OnCloseGameCanceled(InputAction.CallbackContext context)
+    {
+        return;
     }
 }

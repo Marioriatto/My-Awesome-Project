@@ -1,27 +1,22 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 using TMPro;
 using System.Collections.Generic;
-using UnityEngine.UI;
-using UnityEngine.Windows.Speech;
 
 public class RegularDialogueBubble : DialogueBubble
 {
     [SerializeField] InventoryUI inventoryUI;
     [SerializeField] protected TextMeshProUGUI textMeshPro;
-    [SerializeField] protected TextMeshProUGUI nameTextMeshPro;
-    [SerializeField] OptionsBubble optionsBubble;
-    [SerializeField] PlayerInteractionBox interactionBox;
-    [SerializeField] CameraController cameraController;
+    [SerializeField] private TextMeshProUGUI nameTextMeshPro;
+    [SerializeField] protected OptionsBubble optionsBubble;
+    [SerializeField] private PlayerInteractionBox interactionBox;
+    [SerializeField] private CameraController cameraController;
     private List<string> dialogues;
-    private List<DialogueOption> options;
+    protected bool isReady, isFirstLine;
+    protected List<DialogueOption> options;
     public Vector2 optionsPosition, shownPosition, hiddenPosition;
-    private bool isReady, isFirstLine;
     public bool isChoosing;
-    private NPC npc;
-    private Coroutine currentCooldown, currentTypewriter;
-
-    // si vuelvo a dar vender deja de funcionar la wea
+    private NPC npc;    
+    protected Coroutine currentCooldown, currentTypewriter;
     protected override void Awake()
     {
         base.Awake();
@@ -33,16 +28,32 @@ public class RegularDialogueBubble : DialogueBubble
     }
     public void Buy()
     {
-        foreach(ItemData item in npc.items)
-        {
-            Debug.Log(item);
-        }
-        // creo que hay un bug con el ultimo dialogo donde me puedo seguir moviendo
-        // necesito la lista o forma de escoger los items a comprars
-        // afeitate la tota porque hoy te lo voa metel
+        // THIS refactor inventoryUI so it can be setted up
+        // make a new scene for the main menu
+        // similar to animal crossing where you follow npcs walking around
+        // make a way to place furniture around or build houses
+        // tomorrow make the game more frutiger aero
+        // design more buildings and so
+
+        // isChoosing is true
+        // 
+        // otherInventory.OpenInventory(npc.items);
+        //      OpenInventory => Build() sets up items
+        //      set all booleans
+        //      allow for movement and selection
+        // allow to buy one at a time
+        // after select, write a dialogue displaying the price of the item and description
+        // close inventory FROM HERE
+        // write a description for all itemData
+        // display options
+        // open again
+        // or dismiss
+        // isChoosing = false;
+        // after all
+        // last dialogue
     }
-    public void Back() {isChoosing = false;}
-    public void SetText(NPC npc)
+    public virtual void Back() {isChoosing = false;}
+    public virtual void SetText(NPC npc)
     {
         if (npc.isDealer)
         {
@@ -131,11 +142,11 @@ public class RegularDialogueBubble : DialogueBubble
     }
     public override void Hide()
     {
-        interactionBox.interactingSubject = null;
+        if (interactionBox != null) interactionBox.interactingSubject = null;
         base.Hide();
-        cameraController.QuitZoom(); 
+        if (cameraController != null) cameraController.QuitZoom(); 
         // probar a simplemente asignar el false de una
-        interactionBox.parentScript.SetInteracting(InputActions.Instance.isOpen);
+        if (interactionBox != null) interactionBox.parentScript.SetInteracting(InputActions.Instance.isInventoryOpen);
     }
     public System.Collections.IEnumerator AnimatePanel(Vector2 target)
     {
@@ -157,7 +168,7 @@ public class RegularDialogueBubble : DialogueBubble
         //this line of code fixed inventory not opening
         inventoryUI.currentAnimation = null;
     }
-    private System.Collections.IEnumerator TypewriterAnimation(string phrase)
+    protected System.Collections.IEnumerator TypewriterAnimation(string phrase)
     {
         textMeshPro.text = "";
         foreach(char letter in phrase)
