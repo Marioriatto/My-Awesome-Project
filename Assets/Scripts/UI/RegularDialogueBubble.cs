@@ -15,24 +15,31 @@ public class RegularDialogueBubble : DialogueBubble
     [SerializeField] CameraController cameraController;
     private List<string> dialogues;
     private List<DialogueOption> options;
-    public Vector2 optionsPosition = new Vector2(0f,0f);
+    public Vector2 optionsPosition, shownPosition, hiddenPosition;
     private bool isReady, isFirstLine;
     public bool isChoosing;
     private NPC npc;
     private Coroutine currentCooldown, currentTypewriter;
 
+    // si vuelvo a dar vender deja de funcionar la wea
     protected override void Awake()
     {
         base.Awake();
+        shownPosition = new Vector2(0f,-270f);
+        hiddenPosition = new Vector2(0f, -1500f);
         currentCooldown = null;
         currentTypewriter = null;
         if (interactionBox == null) Debug.Log("no interaction box reference from dialogueBubble");
     }
     public void Buy()
     {
-        // TODO
-        Debug.Log(PlayerStats.Instance.bubbles);
-        Debug.Log(npc.items);
+        foreach(ItemData item in npc.items)
+        {
+            Debug.Log(item);
+        }
+        // creo que hay un bug con el ultimo dialogo donde me puedo seguir moviendo
+        // necesito la lista o forma de escoger los items a comprars
+        // afeitate la tota porque hoy te lo voa metel
     }
     public void Back() {isChoosing = false;}
     public void SetText(NPC npc)
@@ -57,7 +64,6 @@ public class RegularDialogueBubble : DialogueBubble
         {
             dialogues = npc.dialogues[Random.Range(0,npc.dialogues.Count)].lines;
         }
-
         this.npc = npc;
         cameraController.Zoom();
 
@@ -127,8 +133,29 @@ public class RegularDialogueBubble : DialogueBubble
     {
         interactionBox.interactingSubject = null;
         base.Hide();
-        cameraController.QuitZoom();
-        interactionBox.parentScript.SetInteracting(false);
+        cameraController.QuitZoom(); 
+        // probar a simplemente asignar el false de una
+        interactionBox.parentScript.SetInteracting(InputActions.Instance.isOpen);
+    }
+    public System.Collections.IEnumerator AnimatePanel(Vector2 target)
+    {
+        Vector2 start = rectTransform.anchoredPosition;
+        float elapsed = 0f;
+        while (elapsed < 0.3f)
+        {
+            elapsed += Time.deltaTime;
+            float tiempo = elapsed / 0.3f;
+            rectTransform.anchoredPosition = Vector2.Lerp(start, target, tiempo);
+            yield return null;
+        }
+        rectTransform.anchoredPosition = target;
+        textMeshPro.text = "";
+        if (target == shownPosition)
+        {
+            isChoosing = false;
+        }
+        //this line of code fixed inventory not opening
+        inventoryUI.currentAnimation = null;
     }
     private System.Collections.IEnumerator TypewriterAnimation(string phrase)
     {

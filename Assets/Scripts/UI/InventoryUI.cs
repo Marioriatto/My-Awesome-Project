@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
 public class InventoryUI : MonoBehaviour
 {
     [SerializeField] OptionsBubble optionsBubble;
@@ -17,7 +18,8 @@ public class InventoryUI : MonoBehaviour
     private int swappingRow, swappingCol;
     public bool isCooling, isSelecting, isSelling;
     public int selectingRow, selectingCol;
-    private Coroutine currentAnimation, currentCooldown;
+    private Coroutine currentAnimatePanel, currentCooldown;
+    [System.NonSerialized] public Coroutine currentAnimation;
     
     void Awake()
     {
@@ -95,7 +97,10 @@ public class InventoryUI : MonoBehaviour
             if (!isSelling)
             {
                 if (InputActions.Instance.inventoryInput != 0)
-                OpenInventory();
+                {
+                    OpenInventory();
+                    Debug.Log("opening inventory");
+                }
             }
             else
             {
@@ -118,6 +123,7 @@ public class InventoryUI : MonoBehaviour
                         if (SellSlot())
                         {
                             OpenInventory();
+                            isAnimated = true;
                         }
                     }
                 }
@@ -213,15 +219,18 @@ public class InventoryUI : MonoBehaviour
         selectedSlot.Hover();
         if (!isSelling) 
             playerController.isInteracting = InputActions.Instance.isOpen;
+        // if isSelling, regularDialogueBubble will turn it off
         if (!InputActions.Instance.isOpen)
         {
             if (selectedSlot.itemPrefab != null) selectedSlot.QuitHover();
         }
         else InputActions.Instance.inventorySelectInput = 0f;
-        StartCoroutine(AnimatePanel(target));
+        if (currentAnimatePanel != null) StopCoroutine(currentAnimatePanel);
+        currentAnimatePanel = StartCoroutine(AnimatePanel(target));
     }
     private System.Collections.IEnumerator AnimatePanel(Vector2 target)
     {
+        Debug.Log(currentAnimation);
         while (currentAnimation != null)
             yield return null;
         Vector2 start = rectTransform.anchoredPosition;
@@ -237,10 +246,12 @@ public class InventoryUI : MonoBehaviour
         isAnimated = false;
         if (!InputActions.Instance.isOpen)
         {
-            isSelling = false;
-            playerController.isInteracting = InputActions.Instance.isOpen;
             if (regularDialogueBubble.isChoosing)
-            regularDialogueBubble.isChoosing = false;
+            {
+                if (regularDialogueBubble.currentAnimation != null ) StopCoroutine(regularDialogueBubble.currentAnimation);
+                currentAnimation = StartCoroutine(regularDialogueBubble.AnimatePanel(regularDialogueBubble.shownPosition));
+            }
+            isSelling = false;
         }
     }
     
@@ -271,11 +282,13 @@ public class InventoryUI : MonoBehaviour
     public void Sell()
     {
         isSelling = true;
+        Debug.Log("InputActions.Instance.isOpen="+InputActions.Instance.isOpen+",isAnimated="+isAnimated+",isSelecting="+isSelecting);
         if (InputActions.Instance.isOpen || isAnimated || isSelecting) 
         {
-            Debug.Log("InputActions.Instance.isOpen="+InputActions.Instance.isOpen+",isAnimated="+isAnimated+",isSelecting="+isSelecting);
+            isSelling = false;
             return;
         }
+        StartCoroutine(regularDialogueBubble.AnimatePanel(regularDialogueBubble.hiddenPosition));
         OpenInventory();
     }
     private bool SellSlot()

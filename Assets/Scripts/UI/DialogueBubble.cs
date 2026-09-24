@@ -3,8 +3,8 @@ using UnityEngine;
 public class DialogueBubble : MonoBehaviour
 {
     protected RectTransform rectTransform;
-    protected bool isAnimated;
-    protected Coroutine currentAnimation;
+    public bool isAnimated;
+    [System.NonSerialized] public Coroutine currentAnimation;
     
     protected virtual void Awake()
     {

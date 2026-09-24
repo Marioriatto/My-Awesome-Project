@@ -18,10 +18,24 @@ public class NPC : MonoBehaviour
         stayStill = false;
         isAnimating = false;
         isRotating = false;
-        // check if is not already chosen
-        NPCDialoguesList npcDialoguesList = JsonLoader.Instance.npc[Random.Range(0,JsonLoader.Instance.npc.Count)];
-        npcName = npcDialoguesList.name;
-        dialogues = npcDialoguesList.dialogues;
+        SetNPC();
+    }
+    protected virtual void SetNPC()
+    {
+        for (int i = 0; i < JsonLoader.Instance.npc.Count; i++)
+        {
+            if (JsonLoader.Instance.npcAvailability[i])
+                continue;
+            else
+            {
+                JsonLoader.Instance.npcAvailability[i] = false;
+                NPCDialoguesList npcDialoguesList = JsonLoader.Instance.npc[i];
+                npcName = npcDialoguesList.name;
+                dialogues = npcDialoguesList.dialogues;
+                return;
+            }
+        }
+        dialogues = null;
     }
     protected void Update()
     {

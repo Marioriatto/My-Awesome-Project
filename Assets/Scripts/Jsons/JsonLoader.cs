@@ -23,7 +23,7 @@ public class JsonLoader : MonoBehaviour
         {
             Debug.LogWarning("No hay json");
         }
-    }
+    } 
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -33,5 +33,15 @@ public class JsonLoader : MonoBehaviour
         }
         Instance = this;
         LoadDialogues();
+        npcAvailability = new bool[npc.Count];
+        for (int i = 0; i < npc.Count; i++)
+        {
+            npcAvailability[i] = true;
+        }
+        dealerAvailability = new bool[dealer.Count];
+        for (int i = 0; i < dealer.Count; i++)
+        {
+            dealerAvailability[i] = true;
+        }
     }
 }

@@ -43,6 +43,7 @@
           "name": "Kevyn",
           "dialogues": [
             {"lines": ["Buenas!","Decime, En que te puedo ayudar?"]},
+            {"lines": ["Welcome!","What are ya buying?"]},
             {"lines": ["If you need anything else feel free to ask!"]},
             {"lines": ["Sell","Buy","Back"]}
           ]
