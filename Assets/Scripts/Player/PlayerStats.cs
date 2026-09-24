@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 public class PlayerStats : MonoBehaviour
 {
-    //Singleton
     public static PlayerStats Instance { get; private set;}
     [SerializeField] string _playerName;
     [SerializeField] int _bubbles;
@@ -17,5 +16,14 @@ public class PlayerStats : MonoBehaviour
             return;
         }
         Instance = this;
+    }
+    public bool ChangeBubbles(int amount)
+    {
+        int total = bubbles + amount;
+        if (total < 0)
+            return false;
+        else
+            bubbles += amount;
+            return true;
     }
 }

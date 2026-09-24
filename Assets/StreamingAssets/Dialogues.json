@@ -6,7 +6,7 @@
         {
           "name": "Marlon",
           "dialogues": [
-            { "lines": ["dialogo 1", "dialogo2", "dialogo 3"] },
+            { "lines": ["Soy Mamarlon, bienvenido a resis.", "En el pasillo voy a rancharte.", ""] },
             { "lines": ["text1", "text2", "text3"] }
           ]
         },
@@ -22,8 +22,16 @@
           "name": "Jose",
           "dialogues": [
             { "lines": ["Jorge, Il aseo per favore", "Ethan, la cuota per favore", "Adrian, la droga per favore."] },
-            { "lines": ["Dialogo Jose 2", "Dialogo Jose 2.1", "Dialogo Jose 2.2"] },
-            { "lines": ["Dialogo Jose 3", "Dialogo Jose 3.1", "Dialogo Jose 3.2"] }
+            { "lines": ["Quise reparar el futbolin...", "Pero no hay repuestos.", "Toca castigo para Jorge."] },
+            { "lines": ["A que hora la hacemos reunion?", "Hay que reportar las plantillas sucias.", "Castigo para Jorge. Hoy ayudara con el aseo."] }
+          ]
+        },
+        {
+          "name": "Gero Momo",
+          "dialogues": [
+            { "lines": ["Luigi, Il conto per favore, piccere peppe.", "Momo te haces el que te sabes de futbol y sos de platense", "te voy a meter un permaban"] },
+            { "lines": ["Momo quien te corto el pelo para no ir", "Uy es una cagada amigo porque vive en tu casa digamos", "es la puta de tu mama tu vieja me corta el pelo"] },
+            { "lines": ["Y esos audis de virgo momo", "Vos sabes que vas a ser el primer baneado"] }
           ]
         }
       ]
@@ -34,8 +42,7 @@
         {
           "name": "Kevyn",
           "dialogues": [
-            {"lines": ["Dialogue 1","Dialogue 1.1","Dialogue 1.2"]},
-            {"lines": ["Dialogue 2","Dialoue 2.1","Dialogue 2.2"]},
+            {"lines": ["Buenas!","Decime, En que te puedo ayudar?"]},
             {"lines": ["If you need anything else feel free to ask!"]},
             {"lines": ["Sell","Buy","Back"]}
           ]

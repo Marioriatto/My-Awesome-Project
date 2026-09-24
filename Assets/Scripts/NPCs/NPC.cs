@@ -10,8 +10,7 @@ public class NPC : MonoBehaviour
     public List<ItemData> items;
     public List<Dialogues> dialogues;
     protected bool isAnimating, isRotating;
-    public bool isDealer;
-    public bool stayStill;
+    public bool isDealer, stayStill;
     protected Coroutine currentAnimation, currentRotation;
     protected virtual void Start()
     {
@@ -19,6 +18,7 @@ public class NPC : MonoBehaviour
         stayStill = false;
         isAnimating = false;
         isRotating = false;
+        // check if is not already chosen
         NPCDialoguesList npcDialoguesList = JsonLoader.Instance.npc[Random.Range(0,JsonLoader.Instance.npc.Count)];
         npcName = npcDialoguesList.name;
         dialogues = npcDialoguesList.dialogues;

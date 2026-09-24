@@ -117,8 +117,6 @@ public class InventoryUI : MonoBehaviour
                     {
                         if (SellSlot())
                         {
-                            if (currentCooldown != null) StopCoroutine(currentCooldown);
-                            currentCooldown = StartCoroutine(Cooldown());
                             OpenInventory();
                         }
                     }
@@ -208,22 +206,24 @@ public class InventoryUI : MonoBehaviour
             selectedSlot = slots[0];
         }
         isAnimated = true;
-        bubbleCountText.text = PlayerStats.Instance.bubbles.ToString();
+        if (!InputActions.Instance.isOpen)
+            bubbleCountText.text = PlayerStats.Instance.bubbles.ToString();
         Vector2 target = InputActions.Instance.isOpen ? hiddenPosition : shownPosition;
         InputActions.Instance.isOpen = !InputActions.Instance.isOpen;
         selectedSlot.Hover();
-        playerController.isInteracting = InputActions.Instance.isOpen;
+        if (!isSelling) 
+            playerController.isInteracting = InputActions.Instance.isOpen;
         if (!InputActions.Instance.isOpen)
         {
             if (selectedSlot.itemPrefab != null) selectedSlot.QuitHover();
         }
         else InputActions.Instance.inventorySelectInput = 0f;
-        if (currentAnimation != null) StopCoroutine(currentAnimation);
-        currentAnimation = StartCoroutine(AnimatePanel(target));
+        StartCoroutine(AnimatePanel(target));
     }
-    
     private System.Collections.IEnumerator AnimatePanel(Vector2 target)
     {
+        while (currentAnimation != null)
+            yield return null;
         Vector2 start = rectTransform.anchoredPosition;
         float elapsed = 0f;
         while (elapsed < 0.3f)
@@ -238,6 +238,7 @@ public class InventoryUI : MonoBehaviour
         if (!InputActions.Instance.isOpen)
         {
             isSelling = false;
+            playerController.isInteracting = InputActions.Instance.isOpen;
             if (regularDialogueBubble.isChoosing)
             regularDialogueBubble.isChoosing = false;
         }
@@ -282,9 +283,16 @@ public class InventoryUI : MonoBehaviour
         if (currentCooldown != null) StopCoroutine(currentCooldown);
         currentCooldown = StartCoroutine(Cooldown());
         if (!selectedSlot.itemData.isSaleable) return false;
-        PlayerStats.Instance.bubbles += selectedSlot.itemData.price;
-        selectedSlot.Discard();
-        return true;
+        int startAmount = PlayerStats.Instance.bubbles;
+        if (PlayerStats.Instance.ChangeBubbles(selectedSlot.itemData.price))
+        {
+            selectedSlot.Discard();
+            if (currentAnimation != null) StopCoroutine(currentAnimation);
+            currentAnimation = StartCoroutine(BubblesAnimation(startAmount));
+            return true;   
+        }
+        else
+            return false;
     }
     public void Use()
     {
@@ -315,5 +323,18 @@ public class InventoryUI : MonoBehaviour
     {
         selectedSlot.Drop();
         isSelecting = false;
+    }
+    private System.Collections.IEnumerator BubblesAnimation(int amount)
+    {
+        int startAmount = amount;
+    
+        while (startAmount <= PlayerStats.Instance.bubbles)
+        {
+            bubbleCountText.text = startAmount.ToString();
+            startAmount += 10;
+            yield return null;
+        }
+        bubbleCountText.text = PlayerStats.Instance.bubbles.ToString();
+        currentAnimation = null;
     }
 }

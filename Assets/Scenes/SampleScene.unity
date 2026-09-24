@@ -1484,6 +1484,7 @@ MonoBehaviour:
   optionsBubble: {fileID: 63035417}
   interactionBox: {fileID: 1606108621}
   cameraController: {fileID: 330585548}
+  optionsPosition: {x: 700, y: 0}
   isChoosing: 0
 --- !u!114 &1606108621 stripped
 MonoBehaviour:

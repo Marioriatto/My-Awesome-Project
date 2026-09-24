@@ -15,7 +15,7 @@ public class RegularDialogueBubble : DialogueBubble
     [SerializeField] CameraController cameraController;
     private List<string> dialogues;
     private List<DialogueOption> options;
-    private Vector2 optionsPosition;
+    public Vector2 optionsPosition = new Vector2(0f,0f);
     private bool isReady, isFirstLine;
     public bool isChoosing;
     private NPC npc;
@@ -31,8 +31,6 @@ public class RegularDialogueBubble : DialogueBubble
     public void Buy()
     {
         // TODO
-        // find the best way to buy items
-        // validate playerStats.Instance has enough money
         Debug.Log(PlayerStats.Instance.bubbles);
         Debug.Log(npc.items);
     }
@@ -108,7 +106,6 @@ public class RegularDialogueBubble : DialogueBubble
             }
             InputActions.Instance.isRegularDialogue = true;
             optionsBubble.SetupOptions(options, optionsPosition);
-            // in some sort of way hide the dialogue menu
             while(isChoosing)
             {
                 yield return null;
