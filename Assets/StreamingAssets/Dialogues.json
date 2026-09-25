@@ -6,7 +6,7 @@
         {
           "name": "Marlon",
           "dialogues": [
-            { "lines": ["Soy Mamarlon, bienvenido a resis.", "En el pasillo voy a rancharte.", ""] },
+            { "lines": ["Soy Mamarlon, bienvenido a resis.", "En el pasillo voy a rancharte.", "Repo"] },
             { "lines": ["text1", "text2", "text3"] }
           ]
         },
@@ -40,11 +40,11 @@
       "typeName": "Dealer",
       "npcList": [
         {
-          "name": "Kevyn",
+          "name": "Merchant",
           "dialogues": [
-            {"lines": ["Buenas!","Decime, En que te puedo ayudar?"]},
+            {"lines": ["Stranger!","Got a good selection of things on sale stranger!"]},
             {"lines": ["Welcome!","What are ya buying?"]},
-            {"lines": ["If you need anything else feel free to ask!"]},
+            {"lines": ["Come back anytime!"]},
             {"lines": ["Sell","Buy","Back"]}
           ]
         }

@@ -1,7 +1,4 @@
 using System.Collections.Generic;
-using Microsoft.Extensions.Logging.Abstractions;
-using Unity.Collections.Tests.CoreCLR.TestJobs;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class NPC : MonoBehaviour

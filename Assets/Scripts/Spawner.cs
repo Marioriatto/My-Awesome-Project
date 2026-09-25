@@ -2,7 +2,9 @@ using UnityEngine;
 using System.Collections;
 
 public class Spawner : MonoBehaviour
-{    [SerializeField] GameObject[] fruits;
+{    
+    [SerializeField] GameObject[] fruits;
+    [SerializeField] GameObject treePrefab;
     [SerializeField] GameObject bubbles;
     [SerializeField] GameObject NPC;
     [SerializeField] GameObject Dealer;
@@ -47,14 +49,32 @@ public class Spawner : MonoBehaviour
             SetCell(x+75,z+75,true);
         }
     }
+    void SpawnTrees()
+    {
+        GameObject tree;
+        for (int i = 0; i < Random.Range(6,12); i++)
+        {
+            int x = Random.Range(-25,25), z = Random.Range(-25,25);
+            tree = Instantiate(treePrefab);
+            int deltax = 1;
+            while (CheckMatrix(x,z))
+            {
+                if (CheckMatrix(x + deltax, z)) x += deltax;
+                else if (CheckMatrix(x - deltax, z)) x -= deltax;
+                else deltax += 1;
+                if (deltax == 149) break;
+            }
+            tree.transform.position = new Vector3(x, 0f, z);
+            SetCell(x+75,z+75,true);
+        }
+    }
     void SpawnNPCs()
     {
-        for (int i = 0; i < 4; i++)
+        GameObject npc;
+        for (int i = 0; i < Random.Range(2,4); i++)
         {
-            GameObject npc;
-            int desicion = Random.Range(0,2), x = Random.Range(-25,25), z = Random.Range(-25,25);
-            if (desicion == 0) npc = Instantiate(NPC);
-            else {npc = Instantiate(Dealer);}
+            int x = Random.Range(-25,25), z = Random.Range(-25,25);
+            npc = Instantiate(NPC);
             int deltax = 1;
             while (CheckMatrix(x,z))
             {
@@ -66,6 +86,18 @@ public class Spawner : MonoBehaviour
             npc.transform.position = new Vector3(x, 1f, z);
             SetCell(x+75,z+75,true);
         }
+        int x2 = Random.Range(-25,25), z2 = Random.Range(-25,25);
+        npc = Instantiate(Dealer);
+        int deltx = 1;
+        while (CheckMatrix(x2,z2))
+        {
+            if (CheckMatrix(x2 + deltx, z2)) x2 += deltx;
+            else if (CheckMatrix(x2 - deltx, z2)) x2 -= deltx;
+            else deltx += 1;
+            if (deltx == 149) break;
+        }
+        npc.transform.position = new Vector3(x2, 1f, z2);
+        SetCell(x2+75,z2+75,true);
     }
     void SpawnHouses()
     {
@@ -77,9 +109,11 @@ public class Spawner : MonoBehaviour
         if (Ground == null) Debug.LogWarning("Spawner does not have a ground prefab");
         Instantiate(Ground);
         StartMatrix();
+        SetCell(75,75,true);
     }
     void Start()
     {
+        SpawnTrees();
         SpawnItems();
         SpawnNPCs();
         //SpawnHouses();

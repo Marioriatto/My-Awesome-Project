@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 public class ExitDialogueBubble : RegularDialogueBubble
@@ -14,7 +13,7 @@ public class ExitDialogueBubble : RegularDialogueBubble
         hiddenPosition = new Vector2(0f, -1500f);
         wasCalled = false;
         currentCooldown = null;
-        currentTypewriter = null;
+        typewriterCoroutine = null;
     }
     protected override void Start()
     {
@@ -40,8 +39,8 @@ public class ExitDialogueBubble : RegularDialogueBubble
         options = new List<DialogueOption>();
         options.Add(new DialogueOption{ text = "Quit", onOptionSelected = Exit});
         options.Add(new DialogueOption{ text = "Back", onOptionSelected = Back});
-        if (currentTypewriter != null) StopCoroutine(currentTypewriter);
-        currentTypewriter = StartCoroutine(Typewriter());
+        if (typewriterCoroutine != null) StopCoroutine(typewriterCoroutine);
+        typewriterCoroutine = StartCoroutine(Typewriter());
     }
     private System.Collections.IEnumerator Typewriter()
     {

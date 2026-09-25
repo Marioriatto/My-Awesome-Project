@@ -6,6 +6,7 @@ public class OptionsBubble : DialogueBubble
 {
     [SerializeField] List<DialogueOption> options;
     [SerializeField] InventoryUI inventoryScript;
+    [SerializeField] RegularDialogueBubble regularDialogueBubble;
     [SerializeField] ExitDialogueBubble exitDialogueBubble;
     [SerializeField] GameObject textOptionPrefab;
     [SerializeField] GameObject hoverPanel;
@@ -28,7 +29,7 @@ public class OptionsBubble : DialogueBubble
     public void SetupOptions(List<DialogueOption> options, Vector2 newPosition)
     {
         Show();
-        if (exitDialogueBubble.wasCalled)
+        if (exitDialogueBubble.wasCalled || regularDialogueBubble.isChoosing)
         {
             image.enabled = false;
         }

@@ -1,6 +1,4 @@
 using UnityEngine;
-using System.Collections.Generic;
-
 public class PlayerStats : MonoBehaviour
 {
     public static PlayerStats Instance { get; private set;}

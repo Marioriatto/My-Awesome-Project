@@ -1,7 +1,6 @@
 using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
-
 public class RegularDialogueBubble : DialogueBubble
 {
     [SerializeField] InventoryUI inventoryUI, otherInventoryUI;
@@ -16,32 +15,76 @@ public class RegularDialogueBubble : DialogueBubble
     public Vector2 optionsPosition, shownPosition, hiddenPosition;
     public bool isChoosing;
     private NPC npc;    
-    protected Coroutine currentCooldown, currentTypewriter;
+    protected Coroutine currentCooldown, typewriterCoroutine, descriptionCoroutine, textCoroutine;
+    private ItemData pendingItem;
+    private InventoryUI pendingShop;
+    private List<DialogueOption> itemOptions;
     protected override void Awake()
     {
         base.Awake();
         shownPosition = new Vector2(0f,-270f);
         hiddenPosition = new Vector2(0f, -1500f);
         currentCooldown = null;
-        currentTypewriter = null;
+        typewriterCoroutine = null;
         if (interactionBox == null) Debug.Log("no interaction box reference from dialogueBubble");
     }
     public void Buy()
     {
-        // make a new scene for the main menu
-        // similar to animal crossing where you follow npcs walking around
-        // make a way to place furniture around or build houses
-        // tomorrow make the game more frutiger aero
-        // design more buildings and so
-        otherInventoryUI.isBuying = true;
-        otherInventoryUI.Buy(npc.items);
-        // close inventory FROM HERE
-        // display options
-        // open again
-        // or dismiss
-        // isChoosing = false;
-        // after all
-        // last dialogue
+        //otherInventoryUI.Buy(npc.items);
+        isChoosing = false;
+    }
+    public void ShowItemOptions(ItemData item, InventoryUI shop)
+    {
+        pendingItem = item;
+        pendingShop = shop;
+        itemOptions = new List<DialogueOption>
+        {
+            new DialogueOption {text="Buy", onOptionSelected = BuyItem},
+            new DialogueOption {text="Back", onOptionSelected = BackFromItem}
+        };
+        if (descriptionCoroutine != null) StopCoroutine(descriptionCoroutine);
+        descriptionCoroutine = StartCoroutine(ShowDescriptionThenOptions(item.description));
+    }
+    private System.Collections.IEnumerator ShowDescriptionThenOptions(string description)
+    {
+        yield return StartCoroutine(AnimatePanel(shownPosition));
+        descriptionCoroutine = StartTypewriter(description, false);
+        yield return descriptionCoroutine;
+        optionsBubble.SetupOptions(itemOptions, optionsPosition);
+    }
+    private Coroutine StartTypewriter(string phrase, bool signalsReady)
+    {
+        if (textCoroutine != null) StopCoroutine(textCoroutine);
+        textCoroutine = StartCoroutine(TypewriterAnimation(phrase, signalsReady));
+        return textCoroutine;
+    }
+    public void BackFromItem()
+    {
+        HideTemp();
+        pendingShop.ShowGridBack();
+        pendingItem = null;
+        pendingShop = null;
+    }
+    public void BuyItem()
+    {
+        Debug.Log(pendingItem);
+        inventoryUI.Add(pendingItem);
+        pendingShop.RemoveSelectedItem();
+        HideTemp();
+        pendingShop.ShowGridBack();
+        pendingItem = null;
+        pendingShop = null;
+    }
+    public void HideTemp()
+    {
+        if (currentAnimation != null) StopCoroutine(currentAnimation);
+        isReady = true;
+        currentAnimation = StartCoroutine(AnimatePanel(hiddenPosition));
+    }
+    public void ReadDescription(string description)
+    {
+        if (descriptionCoroutine != null) StopCoroutine(descriptionCoroutine);
+        descriptionCoroutine = StartCoroutine(TypewriterAnimation(description, signalsReady: false));
     }
     public virtual void Back() {isChoosing = false;}
     public virtual void SetText(NPC npc)
@@ -77,8 +120,8 @@ public class RegularDialogueBubble : DialogueBubble
         nameTextMeshPro.text = npc.npcName;
 
         PopIn();
-        if (currentTypewriter != null) StopCoroutine(currentTypewriter);
-        currentTypewriter = StartCoroutine(Typewriter());
+        if (typewriterCoroutine != null) StopCoroutine(typewriterCoroutine);
+        typewriterCoroutine = StartCoroutine(Typewriter());
     }
     protected override void Start()
     {
@@ -104,7 +147,7 @@ public class RegularDialogueBubble : DialogueBubble
             isFirstLine = false;
             isReady = false;
             if (currentCooldown != null) StopCoroutine(currentCooldown);
-            currentCooldown = StartCoroutine(TypewriterAnimation(phrase));
+            currentCooldown = StartTypewriter(phrase, true);
         }
         isChoosing = true;
         if (npc.isDealer)
@@ -122,13 +165,14 @@ public class RegularDialogueBubble : DialogueBubble
             string phrase = npc.dialogues[npc.dialogues.Count-2].lines[0];
             isReady = false;
             if (currentCooldown != null) StopCoroutine(currentCooldown);
-            currentCooldown = StartCoroutine(TypewriterAnimation(phrase));
+            currentCooldown = StartTypewriter(phrase, true);
         }
         while (InputActions.Instance.buttonInput == 0 || !isReady)
         {
             yield return null;
         }
         PopOut();
+        otherInventoryUI.isBuying = false;
         InputActions.Instance.isRegularDialogue = false;
         npc.stayStill = false;
     }
@@ -137,8 +181,7 @@ public class RegularDialogueBubble : DialogueBubble
         if (interactionBox != null) interactionBox.interactingSubject = null;
         base.Hide();
         InputActions.Instance.isTalking = false;
-        if (cameraController != null) cameraController.QuitZoom(); 
-        // probar a simplemente asignar el false de una
+        if (cameraController != null) cameraController.QuitZoom();
         if (interactionBox != null) interactionBox.parentScript.SetInteracting(InputActions.Instance.isInventoryOpen);
     }
     public System.Collections.IEnumerator AnimatePanel(Vector2 target)
@@ -154,14 +197,13 @@ public class RegularDialogueBubble : DialogueBubble
         }
         rectTransform.anchoredPosition = target;
         textMeshPro.text = "";
-        if (target == shownPosition)
+        if (target == shownPosition && !otherInventoryUI.isBuying)
         {
             isChoosing = false;
         }
-        //this line of code fixed inventory not opening
         inventoryUI.currentAnimation = null;
     }
-    public System.Collections.IEnumerator TypewriterAnimation(string phrase)
+    public System.Collections.IEnumerator TypewriterAnimation(string phrase, bool signalsReady = true)
     {
         textMeshPro.text = "";
         foreach(char letter in phrase)
@@ -174,7 +216,10 @@ public class RegularDialogueBubble : DialogueBubble
                 yield return null;
             }
         }
-        isReady = true;
-        InputActions.Instance.buttonInput = 0;
+        if (signalsReady)
+        {
+            isReady = true;
+            InputActions.Instance.buttonInput = 0;
+        }
     }
 }

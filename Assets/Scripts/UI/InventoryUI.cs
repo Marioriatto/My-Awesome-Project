@@ -1,9 +1,6 @@
 using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
-using UnityEngine.Rendering;
-using Unity.VisualScripting.ReorderableList;
-using Unity.VisualScripting;
 public class InventoryUI : MonoBehaviour
 {
     [SerializeField] OptionsBubble optionsBubble;
@@ -18,7 +15,7 @@ public class InventoryUI : MonoBehaviour
     private bool isSwappingSlots, isInventoryPanelAnimated;
     private int swappingRow, swappingCol;
     public bool isCoolingAction, isSelectingSlotOptions, isSelling, isBuying, isPlayerInventory;
-    private bool isThisOpen;
+    private bool isThisOpen, isViewingItem;
     public int selectingRow, selectingCol;
     private Coroutine currentAnimatePanel, currentCooldown;
     [System.NonSerialized] public Coroutine currentAnimation;
@@ -107,6 +104,13 @@ public class InventoryUI : MonoBehaviour
         // isCoolingAction and isInventoryOpen are independent
         if (isThisOpen && !isCoolingAction)
         {
+            if (!isPlayerInventory && !isViewingItem && InputActions.Instance.pickInput != 0)
+            {
+                isCoolingAction = true;
+                if (currentCooldown != null) StopCoroutine(currentCooldown);
+                currentCooldown = StartCoroutine(Cooldown());
+                OpenInventory();
+            }
             if(InputActions.Instance.moveInventoryInput.y != 0 || InputActions.Instance.moveInventoryInput.x != 0)
             {
                 if (isPlayerInventory)
@@ -147,14 +151,15 @@ public class InventoryUI : MonoBehaviour
                         currentCooldown = StartCoroutine(Cooldown());
                     }
                 }
+                // here
                 else if (!isPlayerInventory)
                 {
-                    if (currentCooldown != null) StopCoroutine(currentCooldown);
-                    currentCooldown = StartCoroutine(regularDialogueBubble.TypewriterAnimation(selectedSlot.itemData.description));
+                    if (selectedSlot != null && selectedSlot.itemData != null)
+                    {
+                        HideGridForItem();
+                        regularDialogueBubble.ShowItemOptions(selectedSlot.itemData, this);
+                    }
                 }
-                // code:
-                // lo que quiero que haga cuando clicqueo el slot en un inventario distinto
-                // al del jugador
             }
             if (isPlayerInventory)
             {
@@ -208,8 +213,10 @@ public class InventoryUI : MonoBehaviour
                         OpenInventory();
                 }
                 else
+                {
                     if (InputActions.Instance.inventoryInput != 0)
                         OpenInventory();
+                }
             }
         }
     }
@@ -283,7 +290,6 @@ public class InventoryUI : MonoBehaviour
         }
         if (currentCooldown != null) StopCoroutine(currentCooldown);
         currentCooldown = StartCoroutine(Cooldown());
-        Debug.Log(selectedSlot.id);
     }
     private int FindAvailableSlot()
     {
@@ -307,9 +313,8 @@ public class InventoryUI : MonoBehaviour
         InputActions.Instance.isInventoryOpen = !InputActions.Instance.isInventoryOpen;
         isThisOpen = !isThisOpen;
         selectedSlot.Hover();
-        if (!isSelling)
+        if (!isSelling && !isBuying)
             playerController.isInteracting = InputActions.Instance.isInventoryOpen;
-        // if isSelling, regularDialogueBubble will turn it off
         if (!InputActions.Instance.isInventoryOpen)
         {
             if (selectedSlot.itemPrefab != null) selectedSlot.QuitHover();
@@ -332,18 +337,50 @@ public class InventoryUI : MonoBehaviour
             yield return null;
         }
         rectTransform.anchoredPosition = target;
+        
         isInventoryPanelAnimated = false;
         if (!InputActions.Instance.isInventoryOpen)
         {
             if (regularDialogueBubble.isChoosing)
             {
                 if (regularDialogueBubble.currentAnimation != null ) StopCoroutine(regularDialogueBubble.currentAnimation);
-                currentAnimation = StartCoroutine(regularDialogueBubble.AnimatePanel(regularDialogueBubble.shownPosition));
+                regularDialogueBubble.currentAnimation = StartCoroutine(regularDialogueBubble.AnimatePanel(regularDialogueBubble.shownPosition));
             }
             isSelling = false;
+            if (!isViewingItem)
+                isBuying = false;
         }
     }
-    
+    private System.Collections.IEnumerator AnimateGridOnly(Vector2 target)
+    {
+        while ( currentAnimation != null) yield return null;
+        Vector2 start = rectTransform.anchoredPosition;
+        float elapsed = 0f;
+        while (elapsed < 0.3f)
+        {
+            elapsed += Time.deltaTime;
+            rectTransform.anchoredPosition = Vector2.Lerp(start, target, elapsed / 0.3f);
+            yield return null;
+        }
+        rectTransform.anchoredPosition = target;
+    }
+    public void HideGridForItem()
+    {
+        isViewingItem = true;
+        if (currentAnimatePanel != null) StopCoroutine(currentAnimatePanel);
+        currentAnimatePanel = StartCoroutine(AnimateGridOnly(hiddenPosition));
+    }
+    public void ShowGridBack()
+    {
+        isViewingItem = false;
+        if (currentAnimatePanel != null) StopCoroutine(currentAnimatePanel);
+        currentAnimatePanel = StartCoroutine(AnimateGridOnly(shownPosition));
+        if (selectedSlot != null) selectedSlot.Hover();
+    }
+    public void RemoveSelectedItem()
+    {
+        if (selectedSlot != null) selectedSlot.Discard();
+    }
     private System.Collections.IEnumerator Cooldown()
     {
         float elaps = 0f;
@@ -395,22 +432,22 @@ public class InventoryUI : MonoBehaviour
         }
         if (InputActions.Instance.isInventoryOpen || isInventoryPanelAnimated || isSelectingSlotOptions) 
         {
-            isBuying = false;
             return;
         }
-        StartCoroutine(regularDialogueBubble.AnimatePanel(regularDialogueBubble.hiddenPosition));       
+        isBuying = true;
+        regularDialogueBubble.HideTemp();       
         OpenInventory();
     }
     public void Sell()
     {
-        // allow to sell one or more items instead
         isSelling = true;
         if (InputActions.Instance.isInventoryOpen || isInventoryPanelAnimated || isSelectingSlotOptions) 
         {
             isSelling = false;
             return;
         }
-        StartCoroutine(regularDialogueBubble.AnimatePanel(regularDialogueBubble.hiddenPosition));
+        if (regularDialogueBubble.currentAnimation != null) StopCoroutine(regularDialogueBubble.currentAnimation);
+        regularDialogueBubble.currentAnimation = StartCoroutine(regularDialogueBubble.AnimatePanel(regularDialogueBubble.hiddenPosition));
         OpenInventory();
     }
     public void Swap()

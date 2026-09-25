@@ -1,4 +1,3 @@
-using UnityEditor.Search;
 using UnityEngine;
 
 public class PlayerInteractionBox : MonoBehaviour
@@ -18,7 +17,6 @@ public class PlayerInteractionBox : MonoBehaviour
         {
             if (interactingSubject == null && InputActions.Instance.buttonInput != 0 && parentScript.isInteracting == false) 
             {
-                Debug.Log(interactingSubject);
                 interactingSubject = other.gameObject;
                 parentScript.isInteracting = true;
                 NPC npc = other.gameObject.GetComponent<NPC>();
