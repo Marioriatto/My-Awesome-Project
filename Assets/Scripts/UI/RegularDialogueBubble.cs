@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class RegularDialogueBubble : DialogueBubble
 {
-    [SerializeField] InventoryUI inventoryUI;
+    [SerializeField] InventoryUI inventoryUI, otherInventoryUI;
     [SerializeField] protected TextMeshProUGUI textMeshPro;
     [SerializeField] private TextMeshProUGUI nameTextMeshPro;
     [SerializeField] protected OptionsBubble optionsBubble;
@@ -28,23 +28,14 @@ public class RegularDialogueBubble : DialogueBubble
     }
     public void Buy()
     {
-        // THIS refactor inventoryUI so it can be setted up
         // make a new scene for the main menu
         // similar to animal crossing where you follow npcs walking around
         // make a way to place furniture around or build houses
         // tomorrow make the game more frutiger aero
         // design more buildings and so
-
-        // isChoosing is true
-        // 
-        // otherInventory.OpenInventory(npc.items);
-        //      OpenInventory => Build() sets up items
-        //      set all booleans
-        //      allow for movement and selection
-        // allow to buy one at a time
-        // after select, write a dialogue displaying the price of the item and description
+        otherInventoryUI.isBuying = true;
+        otherInventoryUI.Buy(npc.items);
         // close inventory FROM HERE
-        // write a description for all itemData
         // display options
         // open again
         // or dismiss
@@ -55,6 +46,7 @@ public class RegularDialogueBubble : DialogueBubble
     public virtual void Back() {isChoosing = false;}
     public virtual void SetText(NPC npc)
     {
+        InputActions.Instance.isTalking = true;
         if (npc.isDealer)
         {
             options = new List<DialogueOption>();
@@ -144,6 +136,7 @@ public class RegularDialogueBubble : DialogueBubble
     {
         if (interactionBox != null) interactionBox.interactingSubject = null;
         base.Hide();
+        InputActions.Instance.isTalking = false;
         if (cameraController != null) cameraController.QuitZoom(); 
         // probar a simplemente asignar el false de una
         if (interactionBox != null) interactionBox.parentScript.SetInteracting(InputActions.Instance.isInventoryOpen);
@@ -168,7 +161,7 @@ public class RegularDialogueBubble : DialogueBubble
         //this line of code fixed inventory not opening
         inventoryUI.currentAnimation = null;
     }
-    protected System.Collections.IEnumerator TypewriterAnimation(string phrase)
+    public System.Collections.IEnumerator TypewriterAnimation(string phrase)
     {
         textMeshPro.text = "";
         foreach(char letter in phrase)

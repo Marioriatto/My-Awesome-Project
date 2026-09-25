@@ -16,13 +16,13 @@ public class PlayerInteractionBox : MonoBehaviour
     {
         if (other.CompareTag("NPC"))
         {
-            if (InputActions.Instance.buttonInput != 0 && parentScript.isInteracting == false) 
+            if (interactingSubject == null && InputActions.Instance.buttonInput != 0 && parentScript.isInteracting == false) 
             {
-                if (interactingSubject != null) return;
+                Debug.Log(interactingSubject);
                 interactingSubject = other.gameObject;
                 parentScript.isInteracting = true;
                 NPC npc = other.gameObject.GetComponent<NPC>();
-                if (npc.dialogues == null) Debug.Log("no dialogues found in npc");
+                if (npc.dialogues == null) Debug.Log("no dialogues found in npc"+ npc.npcName);
                 else
                 {
                     parentScript.RotateTowardsTarget(npc.transform.position);
@@ -30,13 +30,13 @@ public class PlayerInteractionBox : MonoBehaviour
                     npc.RotateTowards(PlayerStats.Instance.transform.position);
                     dialogueBubble.SetText(npc);
                 }
+                return;
             }
         }
         else if (other.CompareTag("Dealer"))
         {
-            if (InputActions.Instance.buttonInput != 0 && parentScript.isInteracting == false)
+            if (interactingSubject == null && InputActions.Instance.buttonInput != 0 && parentScript.isInteracting == false)
             {
-                if (interactingSubject != null) return;
                 interactingSubject = other.gameObject;
                 parentScript.isInteracting = true;
                 Dealer dealer = other.gameObject.GetComponent<Dealer>();
@@ -48,6 +48,7 @@ public class PlayerInteractionBox : MonoBehaviour
                     dealer.RotateTowards(PlayerStats.Instance.transform.position);
                     dialogueBubble.SetText(dealer);
                 }
+                return;
             }
         }
         else if (other.CompareTag("House"))

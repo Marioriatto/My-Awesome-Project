@@ -297,9 +297,13 @@ MonoBehaviour:
   isCoolingAction: 0
   isSelectingSlotOptions: 0
   isSelling: 0
+  isBuying: 0
   isPlayerInventory: 1
   selectingRow: 0
   selectingCol: 0
+  startPosition: {x: -650, y: 50}
+  spacing: {x: 330, y: 300}
+  slotPrefab: {fileID: 2207646332249388215, guid: 24186d87d2612234d8c0f781a5414b72, type: 3}
 --- !u!1 &63035416
 GameObject:
   m_ObjectHideFlags: 0
@@ -334,6 +338,7 @@ MonoBehaviour:
   isAnimated: 0
   options: []
   inventoryScript: {fileID: 59630016}
+  exitDialogueBubble: {fileID: 104711394}
   textOptionPrefab: {fileID: 2823950780951979706, guid: 6a4824354f9441b4f8087d9d4dd0d0f5, type: 3}
   hoverPanel: {fileID: 1619714573}
 --- !u!224 &63035418
@@ -622,15 +627,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ExitDialogueBubble
   isAnimated: 0
   inventoryUI: {fileID: 59630016}
+  otherInventoryUI: {fileID: 0}
   textMeshPro: {fileID: 56366634}
   nameTextMeshPro: {fileID: 0}
   optionsBubble: {fileID: 63035417}
   interactionBox: {fileID: 0}
   cameraController: {fileID: 0}
-  optionsPosition: {x: 0, y: 0}
+  optionsPosition: {x: -300, y: -350}
   shownPosition: {x: 0, y: 0}
   hiddenPosition: {x: 0, y: 0}
   isChoosing: 0
+  wasCalled: 0
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -1075,6 +1082,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06706d9606c6b0248896b98f854b46b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InputActions
+  exit: {fileID: 104711394}
   moveInventoryInput: {x: 0, y: 0}
   moveInput: {x: 0, y: 0}
   rotateInput: {x: 0, y: 0}
@@ -1226,6 +1234,109 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &899091047
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 899091051}
+  - component: {fileID: 899091050}
+  - component: {fileID: 899091049}
+  - component: {fileID: 899091048}
+  m_Layer: 5
+  m_Name: OtherInventoryPanel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &899091048
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 899091047}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e816a18511d33b247a0f08e4efff55b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryUI
+  optionsBubble: {fileID: 63035417}
+  slots: []
+  playerController: {fileID: 1251890865}
+  regularDialogueBubble: {fileID: 1325043878}
+  bubbleCountRectTransform: {fileID: 0}
+  isCoolingAction: 0
+  isSelectingSlotOptions: 0
+  isSelling: 0
+  isBuying: 0
+  isPlayerInventory: 0
+  selectingRow: 0
+  selectingCol: 0
+  startPosition: {x: -650, y: 50}
+  spacing: {x: 330, y: 300}
+  slotPrefab: {fileID: 2207646332249388215, guid: 24186d87d2612234d8c0f781a5414b72, type: 3}
+--- !u!114 &899091049
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 899091047}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 3120921545988977193, guid: cc7b00b31622c2c42b7f5f9fe119c9ad, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &899091050
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 899091047}
+  m_CullTransparentMesh: 1
+--- !u!224 &899091051
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 899091047}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 916299064}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 1900, y: 1200}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &916299060
 GameObject:
   m_ObjectHideFlags: 0
@@ -1325,6 +1436,7 @@ RectTransform:
   - {fileID: 1325043875}
   - {fileID: 104711390}
   - {fileID: 59630013}
+  - {fileID: 899091051}
   - {fileID: 63035418}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1389,12 +1501,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6eb1686a3b0bc914fbc1959146b858c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Spawner
-  slotPrefab: {fileID: 2207646332249388215, guid: 24186d87d2612234d8c0f781a5414b72, type: 3}
-  slotParent: {fileID: 59630013}
-  player: {fileID: 1838032432}
-  inventoryUIScript: {fileID: 59630016}
-  startPosition: {x: -650, y: 50}
-  spacing: {x: 330, y: 300}
   fruits:
   - {fileID: 6248771157917697480, guid: ec3b849f7176aa642abff0a4506034c9, type: 3}
   bubbles: {fileID: 2336983857482979661, guid: 6221e376b9e470d469f95b049af7a869, type: 3}
@@ -1622,7 +1728,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8358626421586054025, guid: 3e7edc5867c3a4a4c9507f02532bcf8c, type: 3}
   m_PrefabInstance: {fileID: 884249729083506529}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1838032432}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 68bbb2bbb1041804780575252212dd83, type: 3}
@@ -1721,6 +1827,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RegularDialogueBubble
   isAnimated: 0
   inventoryUI: {fileID: 59630016}
+  otherInventoryUI: {fileID: 899091048}
   textMeshPro: {fileID: 332701191}
   nameTextMeshPro: {fileID: 1149390197}
   optionsBubble: {fileID: 63035417}
@@ -1939,11 +2046,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1800957288}
   m_CullTransparentMesh: 1
---- !u!1 &1838032432 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7509139578138413246, guid: 3e7edc5867c3a4a4c9507f02532bcf8c, type: 3}
-  m_PrefabInstance: {fileID: 884249729083506529}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1839810501
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,13 +1,16 @@
 using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
+using UnityEngine.UI;
 public class OptionsBubble : DialogueBubble
 {
     [SerializeField] List<DialogueOption> options;
     [SerializeField] InventoryUI inventoryScript;
+    [SerializeField] ExitDialogueBubble exitDialogueBubble;
     [SerializeField] GameObject textOptionPrefab;
     [SerializeField] GameObject hoverPanel;
     private GameObject[] textOptionsList;
+    private Image image;
     private RectTransform HPRectTransform;
     private int selectedIndex;
     [System.NonSerialized] public float spacing = 67f;
@@ -20,10 +23,19 @@ public class OptionsBubble : DialogueBubble
         isCooling = false;
         currentCooldown = null;
         selectedIndex = 0;
+        image = GetComponent<Image>();
     }
     public void SetupOptions(List<DialogueOption> options, Vector2 newPosition)
     {
         Show();
+        if (exitDialogueBubble.wasCalled)
+        {
+            image.enabled = false;
+        }
+        else
+        {
+            image.enabled = true;
+        }
         selectedIndex = 0;
         this.options = options;
         Vector2 finalSize = new Vector2(bubbleWidth, spacing * (options.Count + 1));

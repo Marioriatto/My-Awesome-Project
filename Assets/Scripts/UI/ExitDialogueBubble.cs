@@ -1,10 +1,12 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class ExitDialogueBubble : RegularDialogueBubble
 {
     // write a way to save data
-    private bool wasCalled;
+    public bool wasCalled;
+    private PlayerController player;
     protected override void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
@@ -13,6 +15,11 @@ public class ExitDialogueBubble : RegularDialogueBubble
         wasCalled = false;
         currentCooldown = null;
         currentTypewriter = null;
+    }
+    protected override void Start()
+    {
+        base.Start();
+        player = PlayerStats.Instance.gameObject.GetComponent<PlayerController>();
     }
     private void Exit()
     {
@@ -23,18 +30,16 @@ public class ExitDialogueBubble : RegularDialogueBubble
             Application.Quit();
         #endif
     }
-    public override void Back()
-    {
-        
-    }
     public void Call()
     {
-        if (wasCalled) return;
+        if (wasCalled || InputActions.Instance.isInventoryOpen || InputActions.Instance.isTalking) return;
         wasCalled = true;
+        InputActions.Instance.isRegularDialogue = true;
+        player.isInteracting = true;
         PopIn();
         options = new List<DialogueOption>();
-        options.Add(new DialogueOption{ text = "Save and quit.", onOptionSelected = Exit});
-        options.Add(new DialogueOption{ text = "Keep playing!", onOptionSelected = Back});
+        options.Add(new DialogueOption{ text = "Quit", onOptionSelected = Exit});
+        options.Add(new DialogueOption{ text = "Back", onOptionSelected = Back});
         if (currentTypewriter != null) StopCoroutine(currentTypewriter);
         currentTypewriter = StartCoroutine(Typewriter());
     }
@@ -62,6 +67,9 @@ public class ExitDialogueBubble : RegularDialogueBubble
     protected override void PopOut()
     {
         base.PopOut();
+        textMeshPro.text = "";
+        player.isInteracting = false;
+        InputActions.Instance.isRegularDialogue = false;
         wasCalled = false;
     }
 }

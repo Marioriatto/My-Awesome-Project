@@ -1,6 +1,9 @@
 using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
+using UnityEngine.Rendering;
+using Unity.VisualScripting.ReorderableList;
+using Unity.VisualScripting;
 public class InventoryUI : MonoBehaviour
 {
     [SerializeField] OptionsBubble optionsBubble;
@@ -14,20 +17,61 @@ public class InventoryUI : MonoBehaviour
     private Vector2 shownPosition, hiddenPosition;
     private bool isSwappingSlots, isInventoryPanelAnimated;
     private int swappingRow, swappingCol;
-    public bool isCoolingAction, isSelectingSlotOptions, isSelling, isPlayerInventory;
+    public bool isCoolingAction, isSelectingSlotOptions, isSelling, isBuying, isPlayerInventory;
+    private bool isThisOpen;
     public int selectingRow, selectingCol;
     private Coroutine currentAnimatePanel, currentCooldown;
     [System.NonSerialized] public Coroutine currentAnimation;
     
+    [SerializeField] Vector2 startPosition = new Vector2(-650f, 50f);
+    [SerializeField] Vector2 spacing = new Vector2(330f, 300f);
+    [SerializeField] GameObject slotPrefab;
+
+    
+    void SpawnSlots()
+    {
+        int limit;
+        // if isPlayer
+        // else do more slots
+        if (isPlayerInventory)
+        {
+            limit = 10;
+        }
+        else
+        {
+            limit = 15;
+            startPosition += new Vector2(0f,300f);
+        }
+        for (int i = 0; i < limit; i++)
+        {
+            GameObject slot = Instantiate(slotPrefab, transform);
+            Slot slotScript = slot.GetComponent<Slot>();
+            if (slotScript == null) Debug.LogWarning("there is no slotscript for "+i+"th slot instance");
+            slotScript.id = i;
+            slotScript.playerController = playerController.gameObject;
+            slots[i] = slotScript;
+            int row = i / 5;
+            int col = i % 5;
+
+            RectTransform slotRectTransform = slot.GetComponent<RectTransform>();
+            slotRectTransform.anchoredPosition = new Vector2(
+                startPosition.x + col * spacing.x,
+                startPosition.y - row * spacing.y
+            );
+        }
+    }
     void Awake()
     {
-        slots = new Slot[10];
+        if (isPlayerInventory) slots = new Slot[10];
+        else slots = new Slot[15];
         rectTransform = GetComponent<RectTransform>();
         bubbleCountText = GetComponentInChildren<TextMeshProUGUI>();
         isInventoryPanelAnimated = false;
         isSelectingSlotOptions = false;
         isSwappingSlots = false;
         isSelling = false;
+        isBuying = false;
+        isThisOpen = false;
         hiddenPosition = new Vector2(0f, -1500f);
         shownPosition = new Vector2(0f, 0f);
         selectedSlot = null;
@@ -35,6 +79,7 @@ public class InventoryUI : MonoBehaviour
     }
     void Start()
     {
+        SpawnSlots();
         InputActions.Instance.isInventoryOpen = false;
         rectTransform.anchoredPosition = hiddenPosition;
         selectingCol = 0;
@@ -60,7 +105,7 @@ public class InventoryUI : MonoBehaviour
         // isSwappingSlots is only on player
         // isSelectingSlotOptions is only on player
         // isCoolingAction and isInventoryOpen are independent
-        if (InputActions.Instance.isInventoryOpen && !isCoolingAction)
+        if (isThisOpen && !isCoolingAction)
         {
             if(InputActions.Instance.moveInventoryInput.y != 0 || InputActions.Instance.moveInventoryInput.x != 0)
             {
@@ -72,9 +117,11 @@ public class InventoryUI : MonoBehaviour
                 else
                     HoverSlot();
             }
-            if (InputActions.Instance.inventorySelectInput != 0)
+            if (InputActions.Instance.inventorySelectInput != 0 && !isSelectingSlotOptions)
             {
-                if (isPlayerInventory && !isSelectingSlotOptions)
+                // como un inventario necesito una forma para saber si el que esta abierto soy yo
+
+                if (isPlayerInventory)
                 {
                     if (isSelling)
                     {
@@ -89,6 +136,7 @@ public class InventoryUI : MonoBehaviour
                     }
                     else
                     {
+                        Debug.Log(gameObject.name);
                         if (selectedSlot != null && selectedSlot.itemPrefab != null)
                         {
                             isSelectingSlotOptions = true;
@@ -98,6 +146,11 @@ public class InventoryUI : MonoBehaviour
                         if (currentCooldown != null) StopCoroutine(currentCooldown);
                         currentCooldown = StartCoroutine(Cooldown());
                     }
+                }
+                else if (!isPlayerInventory)
+                {
+                    if (currentCooldown != null) StopCoroutine(currentCooldown);
+                    currentCooldown = StartCoroutine(regularDialogueBubble.TypewriterAnimation(selectedSlot.itemData.description));
                 }
                 // code:
                 // lo que quiero que haga cuando clicqueo el slot en un inventario distinto
@@ -147,7 +200,7 @@ public class InventoryUI : MonoBehaviour
         }
         if (!isInventoryPanelAnimated)
         {
-            if (isPlayerInventory && !isSelectingSlotOptions)
+            if (((!playerController.isInteracting && !InputActions.Instance.isInventoryOpen) || InputActions.Instance.isInventoryOpen) && isPlayerInventory && !isSelectingSlotOptions)
             {
                 if (isSelling)
                 {
@@ -181,7 +234,20 @@ public class InventoryUI : MonoBehaviour
 
         optionsBubble.SetupOptions(resolvedOptions, selectedSlot.GetComponent<RectTransform>().anchoredPosition);
     }
-    
+    public bool Add(ItemData item)
+    {
+        int nextAvailableSlot = FindAvailableSlot();
+        if (nextAvailableSlot != -1)
+        {
+            slots[nextAvailableSlot].SetContainer(item);
+            return true;
+        }
+        else
+        {
+            Debug.Log("the inventory is full");
+            return false;
+        }
+    }    
     private void HoverSlot()
     {
         if (isSwappingSlots)
@@ -207,13 +273,17 @@ public class InventoryUI : MonoBehaviour
             isCoolingAction = true;
             selectingCol += (int)InputActions.Instance.moveInventoryInput.x;
             selectingCol = (selectingCol < 0) ? 4 : selectingCol % 5;
-            selectingRow += (int)InputActions.Instance.moveInventoryInput.y;
-            selectingRow = (selectingRow < 0) ? 1 : selectingRow % 2;
+            selectingRow -= (int)InputActions.Instance.moveInventoryInput.y;
+            if (isPlayerInventory)
+                selectingRow = (selectingRow < 0) ? 1 : selectingRow % 2;
+            else
+                selectingRow = (selectingRow < 0) ? 2 : selectingRow % 3;
             selectedSlot = slots[(5 * selectingRow) + selectingCol];
             selectedSlot.Hover();
         }
         if (currentCooldown != null) StopCoroutine(currentCooldown);
         currentCooldown = StartCoroutine(Cooldown());
+        Debug.Log(selectedSlot.id);
     }
     private int FindAvailableSlot()
     {
@@ -231,10 +301,11 @@ public class InventoryUI : MonoBehaviour
             selectedSlot = slots[0];
         }
         isInventoryPanelAnimated = true;
-        if (!InputActions.Instance.isInventoryOpen)
+        if (!InputActions.Instance.isInventoryOpen && isPlayerInventory)
             bubbleCountText.text = PlayerStats.Instance.bubbles.ToString();
         Vector2 target = InputActions.Instance.isInventoryOpen ? hiddenPosition : shownPosition;
         InputActions.Instance.isInventoryOpen = !InputActions.Instance.isInventoryOpen;
+        isThisOpen = !isThisOpen;
         selectedSlot.Hover();
         if (!isSelling)
             playerController.isInteracting = InputActions.Instance.isInventoryOpen;
@@ -283,32 +354,7 @@ public class InventoryUI : MonoBehaviour
         }
         isCoolingAction = false;
     }
-    public bool Add(Item item)
-    {
-        int nextAvailableSlot = FindAvailableSlot();
-        if (nextAvailableSlot != -1)
-        {
-            slots[nextAvailableSlot].SetContainer(item.data);
-            return true;
-        }
-        else
-        {
-            Debug.Log("the inventory is full");
-            return false;
-        }
-    }
-    public void Sell()
-    {
-        // allow to sell one or more items instead
-        isSelling = true;
-        if (InputActions.Instance.isInventoryOpen || isInventoryPanelAnimated || isSelectingSlotOptions) 
-        {
-            isSelling = false;
-            return;
-        }
-        StartCoroutine(regularDialogueBubble.AnimatePanel(regularDialogueBubble.hiddenPosition));
-        OpenInventory();
-    }
+
     private bool SellSlot()
     {
         if (currentCooldown != null) StopCoroutine(currentCooldown);
@@ -339,6 +385,33 @@ public class InventoryUI : MonoBehaviour
         currentCooldown = StartCoroutine(Cooldown());
         selectedSlot.Discard();
         isSelectingSlotOptions = false;
+    }
+    public void Buy(List<ItemData> items)
+    {
+        if (isPlayerInventory) return;
+        foreach (ItemData item in items)
+        {
+            Add(item);
+        }
+        if (InputActions.Instance.isInventoryOpen || isInventoryPanelAnimated || isSelectingSlotOptions) 
+        {
+            isBuying = false;
+            return;
+        }
+        StartCoroutine(regularDialogueBubble.AnimatePanel(regularDialogueBubble.hiddenPosition));       
+        OpenInventory();
+    }
+    public void Sell()
+    {
+        // allow to sell one or more items instead
+        isSelling = true;
+        if (InputActions.Instance.isInventoryOpen || isInventoryPanelAnimated || isSelectingSlotOptions) 
+        {
+            isSelling = false;
+            return;
+        }
+        StartCoroutine(regularDialogueBubble.AnimatePanel(regularDialogueBubble.hiddenPosition));
+        OpenInventory();
     }
     public void Swap()
     {

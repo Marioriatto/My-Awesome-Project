@@ -24,7 +24,7 @@ public class NPC : MonoBehaviour
     {
         for (int i = 0; i < JsonLoader.Instance.npc.Count; i++)
         {
-            if (JsonLoader.Instance.npcAvailability[i])
+            if (!JsonLoader.Instance.npcAvailability[i])
                 continue;
             else
             {
@@ -35,6 +35,7 @@ public class NPC : MonoBehaviour
                 return;
             }
         }
+        Debug.Log("ran out of pp");
         dialogues = null;
     }
     protected void Update()

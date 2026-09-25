@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
             if (InputActions.Instance.pickInput != 0 && !isInteracting)
             {
                 Item item = other.gameObject.GetComponent<Item>();
-                if (inventoryScript.Add(item)) item.Pick();
+                if (inventoryScript.Add(item.data)) item.Pick();
             }
         }
     }
