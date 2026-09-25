@@ -118,7 +118,7 @@ public class InventoryUI : MonoBehaviour
                     if (!isSelectingSlotOptions)
                         HoverSlot();
                 }
-                else
+                else if (!isViewingItem)
                     HoverSlot();
             }
             if (InputActions.Instance.inventorySelectInput != 0 && !isSelectingSlotOptions)
@@ -140,7 +140,6 @@ public class InventoryUI : MonoBehaviour
                     }
                     else
                     {
-                        Debug.Log(gameObject.name);
                         if (selectedSlot != null && selectedSlot.itemPrefab != null)
                         {
                             isSelectingSlotOptions = true;
@@ -152,13 +151,16 @@ public class InventoryUI : MonoBehaviour
                     }
                 }
                 // here
-                else if (!isPlayerInventory)
+                else if (!isPlayerInventory && !isViewingItem)
                 {
                     if (selectedSlot != null && selectedSlot.itemData != null)
                     {
                         HideGridForItem();
                         regularDialogueBubble.ShowItemOptions(selectedSlot.itemData, this);
                     }
+                    isCoolingAction = true;
+                    if (currentCooldown != null) StopCoroutine(currentCooldown);
+                    currentCooldown = StartCoroutine(Cooldown());
                 }
             }
             if (isPlayerInventory)
@@ -373,6 +375,7 @@ public class InventoryUI : MonoBehaviour
     public void ShowGridBack()
     {
         isViewingItem = false;
+        InputActions.Instance.inventorySelectInput = 0f;
         if (currentAnimatePanel != null) StopCoroutine(currentAnimatePanel);
         currentAnimatePanel = StartCoroutine(AnimateGridOnly(shownPosition));
         if (selectedSlot != null) selectedSlot.Hover();

@@ -30,8 +30,7 @@ public class RegularDialogueBubble : DialogueBubble
     }
     public void Buy()
     {
-        //otherInventoryUI.Buy(npc.items);
-        isChoosing = false;
+        otherInventoryUI.Buy(npc.items);
     }
     public void ShowItemOptions(ItemData item, InventoryUI shop)
     {
@@ -67,24 +66,32 @@ public class RegularDialogueBubble : DialogueBubble
     }
     public void BuyItem()
     {
-        Debug.Log(pendingItem);
-        inventoryUI.Add(pendingItem);
-        pendingShop.RemoveSelectedItem();
-        HideTemp();
-        pendingShop.ShowGridBack();
+        ItemData item = pendingItem;
+        InventoryUI shop = pendingShop;
         pendingItem = null;
         pendingShop = null;
+        if (PlayerStats.Instance.ChangeBubbles(-item.price))
+        {
+            inventoryUI.Add(pendingItem);
+            pendingShop.RemoveSelectedItem();
+            HideTemp();
+            pendingShop.ShowGridBack();   
+        }
+        else
+            StartCoroutine(NotEnoughBubbles(shop));
+    }
+    private System.Collections.IEnumerator NotEnoughBubbles(InventoryUI shop)
+    {
+        yield return StartTypewriter("Not enough cash, Stranger!", false);
+        yield return new WaitForSeconds(1f);
+        HideTemp();
+        shop.ShowGridBack();
     }
     public void HideTemp()
     {
         if (currentAnimation != null) StopCoroutine(currentAnimation);
         isReady = true;
         currentAnimation = StartCoroutine(AnimatePanel(hiddenPosition));
-    }
-    public void ReadDescription(string description)
-    {
-        if (descriptionCoroutine != null) StopCoroutine(descriptionCoroutine);
-        descriptionCoroutine = StartCoroutine(TypewriterAnimation(description, signalsReady: false));
     }
     public virtual void Back() {isChoosing = false;}
     public virtual void SetText(NPC npc)
