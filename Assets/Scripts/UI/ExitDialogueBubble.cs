@@ -10,7 +10,7 @@ public class ExitDialogueBubble : RegularDialogueBubble
     {
         rectTransform = GetComponent<RectTransform>();
         shownPosition = new Vector2(0f,-270f);
-        hiddenPosition = new Vector2(0f, -1500f);
+        hiddenPosition = new Vector2(0f, -3500f);
         wasCalled = false;
         currentCooldown = null;
         typewriterCoroutine = null;

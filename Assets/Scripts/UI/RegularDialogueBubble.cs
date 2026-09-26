@@ -23,7 +23,7 @@ public class RegularDialogueBubble : DialogueBubble
     {
         base.Awake();
         shownPosition = new Vector2(0f,-270f);
-        hiddenPosition = new Vector2(0f, -1500f);
+        hiddenPosition = new Vector2(0f, -3500f);
         currentCooldown = null;
         typewriterCoroutine = null;
         if (interactionBox == null) Debug.Log("no interaction box reference from dialogueBubble");
@@ -72,10 +72,10 @@ public class RegularDialogueBubble : DialogueBubble
         pendingShop = null;
         if (PlayerStats.Instance.ChangeBubbles(-item.price))
         {
-            inventoryUI.Add(pendingItem);
-            pendingShop.RemoveSelectedItem();
+            inventoryUI.Add(item);
+            shop.RemoveSelectedItem();
             HideTemp();
-            pendingShop.ShowGridBack();   
+            shop.ShowGridBack();   
         }
         else
             StartCoroutine(NotEnoughBubbles(shop));

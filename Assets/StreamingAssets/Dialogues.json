@@ -6,32 +6,97 @@
         {
           "name": "Marlon",
           "dialogues": [
-            { "lines": ["Soy Mamarlon, bienvenido a resis.", "En el pasillo voy a rancharte.", "Repo"] },
-            { "lines": ["text1", "text2", "text3"] }
+            {
+              "lines": [
+                "I'm Rancharlon, welcome to this place.",
+                "Once I ate so much chicken I ended up throwing up.",
+                "Now they call me Rancharlon because of that."
+              ]
+            },
+            {
+              "lines": [
+                "Let's play poker!",
+                "You say you don't like it?",
+                "Fine, I'll play alone."
+              ]
+            }
           ]
         },
         {
           "name": "Charlie",
           "dialogues": [
-            { "lines": ["Dialogo Charlie 1", "Dialogo Charlie 1.1", "Dialogo Charlie 1.2"] },
-            { "lines": ["Dialogo Charlie 2", "Dialogo Charlie 2.1", "Dialogo Charlie 2.2"] },
-            { "lines": ["Dialogo Charlie 3", "Dialogo Charlie 3.1", "Dialogo Charlie 3.2"] }
+            {
+              "lines": [
+                "I finally found an intership",
+                "so I'll be gone soon",
+                "bye bye people"
+              ]
+            },
+            {
+              "lines": [
+                "I laugh like the frog from a video",
+                "that's fine",
+                "why is Jose blaming and reportig George for everything?"
+              ]
+            },
+            {
+              "lines": [
+                "I finally finished college",
+                "this is where the fun begins",
+                "I'm leaving town, so this is the last time you see me"
+              ]
+            }
           ]
         },
         {
           "name": "Jose",
           "dialogues": [
-            { "lines": ["Jorge, Il aseo per favore", "Ethan, la cuota per favore", "Adrian, la droga per favore."] },
-            { "lines": ["Quise reparar el futbolin...", "Pero no hay repuestos.", "Toca castigo para Jorge."] },
-            { "lines": ["A que hora la hacemos reunion?", "Hay que reportar las plantillas sucias.", "Castigo para Jorge. Hoy ayudara con el aseo."] }
+            {
+              "lines": [
+                "Jorge, Il aseo per favore",
+                "Ethan, la cuota per favore",
+                "Cucurella, la paella per favore."
+              ]
+            },
+            {
+              "lines": [
+                "I tried to find a solution to the broken stuff",
+                "but there were no resources.",
+                "let's report George."
+              ]
+            },
+            {
+              "lines": [
+                "When is the meeting?",
+                "We have to report all jobs done poorly.",
+                "George should be reported for not being curious enough."
+              ]
+            }
           ]
         },
         {
-          "name": "Gero Momo",
+          "name": "Momo",
           "dialogues": [
-            { "lines": ["Luigi, Il conto per favore, piccere peppe.", "Momo te haces el que te sabes de futbol y sos de platense", "te voy a meter un permaban"] },
-            { "lines": ["Momo quien te corto el pelo para no ir", "Uy es una cagada amigo porque vive en tu casa digamos", "es la puta de tu mama tu vieja me corta el pelo"] },
-            { "lines": ["Y esos audis de virgo momo", "Vos sabes que vas a ser el primer baneado"] }
+            {
+              "lines": [
+                "Luigi, Il conto per favore, piccere peppe.",
+                "My grandfather is italian, and I own three properties.",
+                "I was also a boxer, my fight was the second most streamed in history."
+              ]
+            },
+            {
+              "lines": [
+                "Once they someone me who cut my hair to avoid going there",
+                "and I told them it was at their house",
+                "told them their mom cut my hair, so their hair is as bad as mine"
+              ]
+            },
+            {
+              "lines": [
+                "I recently bought a headset people didnt seem to like",
+                "so I banned all of them from the chat"
+              ]
+            }
           ]
         }
       ]
@@ -40,12 +105,32 @@
       "typeName": "Dealer",
       "npcList": [
         {
-          "name": "Merchant",
+          "name": "Dealer",
           "dialogues": [
-            {"lines": ["Stranger!","Got a good selection of things on sale stranger!"]},
-            {"lines": ["Welcome!","What are ya buying?"]},
-            {"lines": ["Come back anytime!"]},
-            {"lines": ["Sell","Buy","Back"]}
+            {
+              "lines": [
+                "Stranger!",
+                "Got a good selection of things on sale stranger!"
+              ]
+            },
+            {
+              "lines": [
+                "Welcome!",
+                "What are ya buying?"
+              ]
+            },
+            {
+              "lines": [
+                "Come back anytime!"
+              ]
+            },
+            {
+              "lines": [
+                "Sell",
+                "Buy",
+                "Back"
+              ]
+            }
           ]
         }
       ]

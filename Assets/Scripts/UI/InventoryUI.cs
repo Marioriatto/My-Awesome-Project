@@ -69,7 +69,7 @@ public class InventoryUI : MonoBehaviour
         isSelling = false;
         isBuying = false;
         isThisOpen = false;
-        hiddenPosition = new Vector2(0f, -1500f);
+        hiddenPosition = new Vector2(0f, -3500f);
         shownPosition = new Vector2(0f, 0f);
         selectedSlot = null;
         swappingSlot = null;
